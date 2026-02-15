@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>During School App Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+  margin:0;
+}
+
+header {
+  background:#1e293b;
+  padding:20px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+}
+
+.search-box {
+  padding:15px;
+  text-align:center;
+}
+
+input {
+  width:90%;
+  max-width:400px;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+}
+
+.app-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:15px;
+  padding:20px;
+}
+
+.app {
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.app img {
+  width:80px;
+  height:80px;
+  border-radius:16px;
+}
+
+.app h3 {
+  margin:10px 0 5px;
+}
+
+.app p {
+  font-size:14px;
+  opacity:0.8;
+}
+
+.app a {
+  display:block;
+  margin-top:10px;
+  background:#38bdf8;
+  color:black;
+  padding:10px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>📱 During School App Store</header>
+
+<div class="search-box">
+  <input type="text" id="search" placeholder="Search apps..." onkeyup="filterApps()">
+</div>
+
+<div class="app-grid" id="apps">
+
+  <!-- APP 1 -->
+  <div class="app">
+    <img src="calculator.png">
+    <h3>Calculator</h3>
+    <p>Simple calculator app</p>
+    <a href="https://tdf.qzz.io/Duringappstore/com-miui-calculator-315003003-70230966-ec423981671a2a7f8dc75626c6c33e21.apk">
+      Download
+    </a>
+  </div>
+
+  <!-- APP 2 -->
+  <div class="app">
+    <img src="notes.png">
+    <h3>Notes</h3>
+    <p>Take quick notes</p>
+    <a href="https://yourdomain.com/notes.apk">
+      Download
+    </a>
+  </div>
+
+</div>
+
+<script>
+function filterApps() {
+  let input = document.getElementById("search").value.toLowerCase();
+  let apps = document.getElementsByClassName("app");
+
+  for (let i = 0; i < apps.length; i++) {
+    let title = apps[i].innerText.toLowerCase();
+    apps[i].style.display = title.includes(input) ? "block" : "none";
+  }
+}
+</script>
+
+</body>
+</html>
