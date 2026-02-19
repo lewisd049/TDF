@@ -1,12 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Follow Daily Nonsense</title>
-  <script>
-    window.location.replace("https://whatsapp.com/channel/0029VbBAUdFC1FuLVAYKc11v");
-  </script>
-</head>
-<body>
-</body>
-</html>
+const SPREADSHEET_ID = "1q8q1kEkEmwu5M3aWviMk8bskUHznlQzoDo0z4Rsmqqk";
+const SHEET_NAME = "Sheet1";
+const ADMIN_PASSWORD = "DailyNonsense2026";
+
+function getSheet() {
+  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+}
+
+function doGet() {
+  return getPosts();
+}
+
+function doPost(e) {
+  const action = e.parameter.action;
+
+  if (action === "create") return createPost(e);
+  if (action === "delete") return deletePost(e);
+  if (action === "edit") return editPost(e);
+  if (action === "react") return reactPost(e);
+  if (action === "pin") return pinPost(e);
+
+  return json({error:"Invalid action"});
+}
+
+function createPost(e) {
+  const sheet = getSheet();
+  const id = new Date().getTime();
+  const name = e.parameter.name || "Anonymous";
+  const message = moderate(e.parameter.message);
+
+  sheet.appendRow([
+    id,
+    name,
+    message,
+    new Date(),
+    "{}",
+    "false"
+  ]);
+
+  return json({status:"created"});
+}
+
+function deletePost(e) {
+  if (e.parameter.password !== ADMIN_PASSWORD) 
+    return json({error:"Wrong password"});
+
+  const sheet = getSheet();
+  const id = e.parameter.id;
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == id) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+
+  return json({status:"deleted"});
+}
+
+function editPost(e) {
+  if (e.parameter.password !== ADMIN_PASSWORD) 
+    return json({error:"Wrong password"});
+
+  const sheet = getSheet();
+  const id = e.parameter.id;
+  const newMessage = moderate(e.parameter.message);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == id) {
+      sheet.getRange(i + 1, 3).setValue(newMessage);
+      break;
+    }
+  }
+
+  return json({status:"edited"});
+}
+
+function reactPost(e) {
+  const sheet = getSheet();
+  const id = e.parameter.id;
+  const emoji = e.parameter.emoji;
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == id) {
+      let reactions = JSON.parse(data[i][4] || "{}");
+      reactions[emoji] = (reactions[emoji] || 0) + 1;
+      sheet.getRange(i + 1, 5).setValue(JSON.stringify(reactions));
+      break;
+    }
+  }
+
+  return json({status:"reacted"});
+}
+
+function pinPost(e) {
+  if (e.parameter.password !== ADMIN_PASSWORD) 
+    return json({error:"Wrong password"});
+
+  const sheet = getSheet();
+  const id = e.parameter.id;
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == id) {
+      sheet.getRange(i + 1, 6).setValue("true");
+      break;
+    }
+  }
+
+  return json({status:"pinned"});
+}
+
+function getPosts() {
+  const sheet = getSheet();
+  const data = sheet.getDataRange().getValues();
+  
+  if (data.length < 2) return json([]);
+
+  data.shift(); // remove headers
+
+  const posts = data.map(row => ({
+    id: row[0],
+    name: row[1],
+    message: row[2],
+    date: row[3],
+    reactions: JSON.parse(row[4] || "{}"),
+    pinned: row[5] === "true"
+  }));
+
+  posts.sort((a, b) => {
+    if (a.pinned === b.pinned) {
+      return b.id - a.id;
+    }
+    return b.pinned - a.pinned;
+  });
+
+  return json(posts);
+}
+
+function moderate(text) {
+  const banned = ["badword1", "badword2"];
+  banned.forEach(word => {
+    const regex = new RegExp(word, "gi");
+    text = text.replace(regex, "***");
+  });
+  return text;
+}
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
