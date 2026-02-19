@@ -4,45 +4,84 @@
 <meta charset="UTF-8">
 <title>Daily Nonsense</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
 body{background:#FFD600;overflow-x:hidden;}
 
+/* INFINITE SCROLLING EMOJIS */
 .emoji-bg{
-position:fixed;width:100%;height:200%;opacity:0.05;
-font-size:60px;line-height:80px;
-animation:scroll 40s linear infinite;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
 pointer-events:none;
+display:flex;
+flex-wrap:wrap;
+font-size:50px;
+line-height:60px;
+opacity:0.05;
+animation:scrollEmojis 40s linear infinite;
+z-index:0;
 }
-@keyframes scroll{from{transform:translateY(0);}to{transform:translateY(-50%);}}
+.emoji-bg span{margin:5px;}
+@keyframes scrollEmojis{
+0%{transform:translateY(0);}
+100%{transform:translateY(-100%);}
+}
 
-/* NAV */
+/* NAVIGATION */
 nav{
 position:fixed;width:100%;top:0;
 background:white;padding:15px 40px;
-display:flex;justify-content:space-between;
+display:flex;justify-content:space-between;align-items:center;
 box-shadow:0 4px 20px rgba(0,0,0,0.1);
 z-index:100;
 }
-nav h2{font-weight:bold;}
-nav a{text-decoration:none;color:black;margin-left:20px;}
+nav .logo{
+font-weight:bold;font-size:24px;margin-right:20px;
+}
+nav .nav-links a{
+text-decoration:none;color:black;margin-left:20px;font-weight:bold;
+}
+nav .join-btn{
+background:black;color:white;padding:8px 15px;border-radius:8px;text-decoration:none;margin-left:20px;
+}
+
+/* HERO BANNER */
+.hero{
+position:relative;
+background:url('https://images.unsplash.com/photo-1601597114112-7ad056ca9f28?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+height:300px;
+display:flex;align-items:center;justify-content:center;
+margin-top:70px;
+border-radius:15px;
+overflow:hidden;
+z-index:1;
+}
+.hero .content{
+background:rgba(255,255,255,0.85);
+padding:30px;
+border-radius:15px;
+text-align:center;
+max-width:700px;
+}
+.hero h1{
+font-family:'Playfair Display', serif;
+font-size:36px;
+margin-bottom:15px;
+}
+.hero p{
+font-size:18px;
+color:#333;
+}
 
 /* CONTAINER */
-.container{max-width:900px;margin:auto;padding:140px 20px;}
-
-/* BANNER */
-.banner{
-background:#FFEB3B;color:black;
-padding:15px;
-border-radius:12px;
-text-align:center;
-margin-bottom:20px;
-font-weight:bold;
-font-size:18px;
-letter-spacing:1px;
-text-transform:uppercase;
-text-shadow:1px 1px #000;
-}
+.container{max-width:900px;margin:auto;padding:40px 20px;position:relative;z-index:2;}
 
 /* CARD */
 .card{
@@ -65,22 +104,27 @@ button{margin-top:10px;padding:10px 20px;background:black;color:white;border:non
 </head>
 <body>
 
-<div class="emoji-bg">
-😂🤣😆😹😜🤪😂🤣😆😹😜🤪😂🤣😆😹😜🤪😂🤣😆😹😜🤪
-</div>
+<div class="emoji-bg" id="emoji-bg"></div>
 
 <nav>
-<h2>Daily Nonsense</h2>
-<div>
+<div style="display:flex;align-items:center;">
+<div class="logo">LOGO</div>
+<div class="nav-links">
 <a href="#discussion">Discussion</a>
 </div>
+</div>
+<a class="join-btn" href="#join">Join</a>
 </nav>
 
-<div class="container">
-
-<div class="banner">
-⚠️ WARNING: STRONG LANGUAGE MAY APPEAR BELOW ⚠️
+<!-- HERO BANNER -->
+<div class="hero">
+<div class="content">
+<h1>Welcome to Daily Nonsense</h1>
+<p>Share your funniest thoughts, reactions, and nonsense with our community. Join the fun and stay entertained!</p>
 </div>
+</div>
+
+<div class="container">
 
 <h2 id="discussion">Discussion</h2>
 
@@ -93,7 +137,19 @@ button{margin-top:10px;padding:10px 20px;background:black;color:white;border:non
 
 <div id="posts"></div>
 
+</div>
+
 <script>
+// POPULATE INFINITE EMOJIS
+const emojiBg=document.getElementById("emoji-bg");
+const emojis=["😂","🤣","😆","😹","😜","🤪"];
+const totalEmojis=500;
+for(let i=0;i<totalEmojis;i++){
+const span=document.createElement("span");
+span.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+emojiBg.appendChild(span);
+}
+
 // FRONTEND FILTERED WORD LIST
 const bannedWords=[
 "shit","fuck","bitch","asshole","dick","pussy","cunt","bastard",
