@@ -1,196 +1,210 @@
-const SPREADSHEET_ID = "1q8q1kEkEmwu5M3aWviMk8bskUHznlQzoDo0z4Rsmqqk";
-const SHEET_NAME = "Sheet1";
-const ADMIN_PASSWORD = "DailyNonsense2026";
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Daily Nonsense</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+body{background:#FFD600;overflow-x:hidden;}
 
-function getSheet() {
-  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+.emoji-bg{
+position:fixed;width:100%;height:200%;opacity:0.05;
+font-size:60px;line-height:80px;
+animation:scroll 40s linear infinite;
+pointer-events:none;
+}
+@keyframes scroll{from{transform:translateY(0);}to{transform:translateY(-50%);}}
+
+/* NAV */
+nav{
+position:fixed;width:100%;top:0;
+background:white;padding:15px 40px;
+display:flex;justify-content:space-between;
+box-shadow:0 4px 20px rgba(0,0,0,0.1);
+z-index:100;
+}
+nav h2{font-weight:bold;}
+nav a{text-decoration:none;color:black;margin-left:20px;}
+
+/* CONTAINER */
+.container{max-width:900px;margin:auto;padding:140px 20px;}
+
+/* BANNER */
+.banner{
+background:#FFEB3B;color:black;
+padding:15px;
+border-radius:12px;
+text-align:center;
+margin-bottom:20px;
+font-weight:bold;
+font-size:18px;
+letter-spacing:1px;
+text-transform:uppercase;
+text-shadow:1px 1px #000;
 }
 
-function doGet() {
-  return getPosts();
+/* CARD */
+.card{
+background:white;padding:20px;
+border-radius:15px;margin-bottom:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+animation:fadeIn .4s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.reactions span{cursor:pointer;margin-right:10px;}
+.pin{color:red;font-weight:bold;}
+.small-btn{font-size:12px;margin-left:10px;cursor:pointer;color:#666;}
+
+/* FORM */
+form{background:white;padding:20px;border-radius:15px;margin-bottom:30px;}
+input,textarea{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;}
+button{margin-top:10px;padding:10px 20px;background:black;color:white;border:none;border-radius:8px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="emoji-bg">
+😂🤣😆😹😜🤪😂🤣😆😹😜🤪😂🤣😆😹😜🤪😂🤣😆😹😜🤪
+</div>
+
+<nav>
+<h2>Daily Nonsense</h2>
+<div>
+<a href="#discussion">Discussion</a>
+</div>
+</nav>
+
+<div class="container">
+
+<div class="banner">
+⚠️ WARNING: STRONG LANGUAGE MAY APPEAR BELOW ⚠️
+</div>
+
+<h2 id="discussion">Discussion</h2>
+
+<form id="postForm">
+<input name="name" placeholder="Your name" required>
+<textarea name="message" placeholder="Your nonsense..." required></textarea>
+<input id="captchaAnswer" placeholder="What is 3 + 4?" required>
+<button type="submit">Post</button>
+</form>
+
+<div id="posts"></div>
+
+<script>
+// FRONTEND FILTERED WORD LIST
+const bannedWords=[
+"shit","fuck","bitch","asshole","dick","pussy","cunt","bastard",
+"nigger","chink","kike","spic","gook","faggot","tranny","retard",
+"porn","sex","hentai","blowjob","cum","dickpic","nude","tits","fuckboy","fuckgirl","incest",
+"weed","cocaine","meth","heroin","lsd","ecstasy","mdma","crack","opioid",
+"kill","murder","bomb","shoot","stab","assault",
+"free money","click here","subscribe","follow me","tiktok.com","discord.gg"
+];
+
+const URL="https://script.google.com/macros/s/AKfycbw1KTxR_Tonz1AG4ep2e7WnK5OfbpwC5wSOGSkYSpjBZdSOIHxFUjl2cXVbeRJmdPyemw/exec";
+
+let lastData="";
+
+// LOAD POSTS ANIMATED LIVE
+function loadPosts(){
+fetch(URL)
+.then(r=>r.json())
+.then(data=>{
+const jsonStr=JSON.stringify(data);
+if(jsonStr===lastData)return;
+lastData=jsonStr;
+
+const container=document.getElementById("posts");
+container.innerHTML="";
+data.forEach(post=>{
+let reactionsHTML="";
+for(let emoji in post.reactions){
+reactionsHTML+=`${emoji} ${post.reactions[emoji]} `;
+}
+container.innerHTML+=`
+<div class="card">
+${post.pinned?'<div class="pin">📌 Pinned</div>':''}
+<h3>${post.name}</h3>
+<p>${post.message}</p>
+<div class="reactions">
+<span onclick="react(${post.id},'😂')">😂</span>
+<span onclick="react(${post.id},'🔥')">🔥</span>
+<span onclick="react(${post.id},'🤯')">🤯</span>
+${reactionsHTML}
+</div>
+<div>
+<span class="small-btn" onclick="editPost(${post.id})">Edit</span>
+<span class="small-btn" onclick="deletePost(${post.id})">Delete</span>
+<span class="small-btn" onclick="pinPost(${post.id})">Pin</span>
+</div>
+</div>`;
+});
+});
 }
 
-function doPost(e) {
-  const action = e.parameter.action;
+setInterval(loadPosts,3000);
+loadPosts();
 
-  if (action === "create") return createPost(e);
-  if (action === "delete") return deletePost(e);
-  if (action === "edit") return editPost(e);
-  if (action === "react") return reactPost(e);
-  if (action === "pin") return pinPost(e);
+// FORM SUBMIT WITH CAPTCHA & FRONTEND FILTER
+document.getElementById("postForm").addEventListener("submit", e=>{
+e.preventDefault();
+const name=e.target.name.value;
+let message=e.target.message.value;
 
-  return json({error:"Invalid action"});
+// CAPTCHA check
+if(document.getElementById("captchaAnswer").value!=7){
+alert("Wrong captcha!");
+return;
 }
 
-function createPost(e) {
-  const sheet = getSheet();
-  const id = new Date().getTime();
-  const name = e.parameter.name || "Anonymous";
-  const message = moderate(e.parameter.message);
-
-  sheet.appendRow([
-    id,
-    name,
-    message,
-    new Date(),
-    "{}",
-    "false"
-  ]);
-
-  return json({status:"created"});
-}
-
-function deletePost(e) {
-  if (e.parameter.password !== ADMIN_PASSWORD) 
-    return json({error:"Wrong password"});
-
-  const sheet = getSheet();
-  const id = e.parameter.id;
-  const data = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == id) {
-      sheet.deleteRow(i + 1);
-      break;
-    }
+// FRONTEND FILTER
+const lowerMessage = message.toLowerCase();
+for(const word of bannedWords){
+  if(lowerMessage.includes(word)){
+    alert("Your message contains banned words.");
+    return;
   }
-
-  return json({status:"deleted"});
 }
 
-function editPost(e) {
-  if (e.parameter.password !== ADMIN_PASSWORD) 
-    return json({error:"Wrong password"});
+// SUBMIT TO APPS SCRIPT
+const formData=new FormData();
+formData.append("name",name);
+formData.append("message",message);
+formData.append("action","create");
 
-  const sheet = getSheet();
-  const id = e.parameter.id;
-  const newMessage = moderate(e.parameter.message);
-  const data = sheet.getDataRange().getValues();
+fetch(URL,{method:"POST",body:formData});
+e.target.reset();
+});
 
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == id) {
-      sheet.getRange(i + 1, 3).setValue(newMessage);
-      break;
-    }
-  }
-
-  return json({status:"edited"});
+// REACTIONS, EDIT, DELETE, PIN
+function react(id,emoji){
+fetch(URL,{method:"POST",
+body:new URLSearchParams({action:"react",id,emoji})
+});
 }
-
-function reactPost(e) {
-  const sheet = getSheet();
-  const id = e.parameter.id;
-  const emoji = e.parameter.emoji;
-  const data = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == id) {
-      let reactions = JSON.parse(data[i][4] || "{}");
-      reactions[emoji] = (reactions[emoji] || 0) + 1;
-      sheet.getRange(i + 1, 5).setValue(JSON.stringify(reactions));
-      break;
-    }
-  }
-
-  return json({status:"reacted"});
+function deletePost(id){
+const password=prompt("Enter password:");
+fetch(URL,{method:"POST",
+body:new URLSearchParams({action:"delete",id,password})
+});
 }
-
-function pinPost(e) {
-  if (e.parameter.password !== ADMIN_PASSWORD) 
-    return json({error:"Wrong password"});
-
-  const sheet = getSheet();
-  const id = e.parameter.id;
-  const data = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == id) {
-      sheet.getRange(i + 1, 6).setValue("true");
-      break;
-    }
-  }
-
-  return json({status:"pinned"});
+function editPost(id){
+const password=prompt("Password:");
+const message=prompt("New message:");
+fetch(URL,{method:"POST",
+body:new URLSearchParams({action:"edit",id,password,message})
+});
 }
-
-function getPosts() {
-  const sheet = getSheet();
-  const data = sheet.getDataRange().getValues();
-  
-  if (data.length < 2) return json([]);
-
-  data.shift(); // remove headers
-
-  const posts = data.map(row => ({
-    id: row[0],
-    name: row[1],
-    message: row[2],
-    date: row[3],
-    reactions: JSON.parse(row[4] || "{}"),
-    pinned: row[5] === "true"
-  }));
-
-  posts.sort((a, b) => {
-    if (a.pinned === b.pinned) {
-      return b.id - a.id;
-    }
-    return b.pinned - a.pinned;
-  });
-
-  return json(posts);
+function pinPost(id){
+const password=prompt("Password:");
+fetch(URL,{method:"POST",
+body:new URLSearchParams({action:"pin",id,password})
+});
 }
+</script>
 
-
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-<!-- Warning: the following code contains strong language -->
-
-
-
-    
-    
-
-    
-function moderate(text) {
-  const banned = ["shit","fuck","bitch","asshole","dick","pussy","cunt","bastard",
-  "nigger","chink","kike","spic","gook","faggot","tranny","retard",
-  "porn","sex","hentai","blowjob","cum","dickpic","nude","tits","fuckboy","fuckgirl","incest",
-  "weed","cocaine","meth","heroin","lsd","ecstasy","mdma","crack","opioid",
-  "kill","murder","bomb","shoot","stab","assault",
-  "free money","click here","subscribe","follow me","tiktok.com","discord.gg"]
-  banned.forEach(word => {
-    const regex = new RegExp(word, "gi");
-    text = text.replace(regex, "***");
-  });
-  return text;
-}
-
-function json(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+</body>
+</html>
