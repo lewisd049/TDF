@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Easter QR Hunt</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+  font-family: Arial;
+  text-align:center;
+  margin:0;
+  padding:20px;
+  background:#f6fff4;
+  transition:0.3s;
+}
+.dark{
+  background:#121212;
+  color:white;
+}
+h1{
+  color:#ff7b00;
+}
+#reader{
+  max-width:320px;
+  margin:auto;
+}
+input, button{
+  padding:10px;
+  margin:5px;
+  font-size:16px;
+}
+table{
+  margin:auto;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+td, th{
+  border:1px solid #ccc;
+  padding:8px 12px;
+}
+#winner{
+  font-size:24px;
+  color:green;
+  margin-top:15px;
+}
+.admin{
+  margin-top:20px;
+  border-top:2px dashed #ccc;
+  padding-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🐣 Easter QR Hunt</h1>
+
+<input id="playerName" placeholder="Enter your name">
+
+<br>
+<button onclick="toggleDark()">🌙 Toggle Dark Mode</button>
+
+<div id="reader"></div>
+
+<h2 id="result"></h2>
+<div id="winner"></div>
+
+<h2>Leaderboard 🏆</h2>
+<table id="leaderboard">
+<tr>
+<th>Player</th>
+<th>Points</th>
+</tr>
+</table>
+
+<div class="admin">
+<h3>Admin Panel</h3>
+<input id="adminPass" placeholder="Enter admin password">
+<button onclick="resetGame()">Reset Scores</button>
+</div>
+
+<audio id="eggSound">
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9bfa8b.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const WIN_POINTS = 200;
+const ADMIN_PASSWORD = "easteradmin";
+
+const points = {
+  EGG1: 10,
+  EGG2: 15,
+  EGG3: 20,
+  EGG4: 25,
+  EGG5: 30,
+  GOLDEN: 100
+};
+
+let scores = JSON.parse(localStorage.getItem("easterScores")) || {};
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+function updateLeaderboard(){
+  const table = document.getElementById("leaderboard");
+  table.innerHTML = "<tr><th>Player</th><th>Points</th></tr>";
+
+  Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([player,score])=>{
+      const row = table.insertRow();
+      row.insertCell(0).innerText = player;
+      row.insertCell(1).innerText = score;
+    });
+}
+
+function checkWinner(player){
+  if(scores[player] >= WIN_POINTS){
+    document.getElementById("winner").innerText =
+      "🏆 " + player + " wins the Easter Hunt!";
+  }
+}
+
+function addPoints(player, code){
+  const pts = points[code];
+  if(!pts) return;
+
+  if(!scores[player]) scores[player] = 0;
+  scores[player] += pts;
+
+  localStorage.setItem("easterScores", JSON.stringify(scores));
+
+  document.getElementById("eggSound").play();
+
+  document.getElementById("result").innerText =
+    player + " found " + code + " 🥚 +" + pts + " points!";
+
+  updateLeaderboard();
+  checkWinner(player);
+}
+
+function onScanSuccess(decodedText) {
+  const player = document.getElementById("playerName").value.trim();
+  if(!player){
+    alert("Enter your name first!");
+    return;
+  }
+
+  addPoints(player, decodedText.toUpperCase());
+}
+
+const scanner = new Html5QrcodeScanner(
+  "reader",
+  { fps: 10, qrbox: 250 }
+);
+
+scanner.render(onScanSuccess);
+
+function resetGame(){
+  const pass = document.getElementById("adminPass").value;
+  if(pass !== ADMIN_PASSWORD){
+    alert("Wrong password");
+    return;
+  }
+
+  localStorage.removeItem("easterScores");
+  scores = {};
+  updateLeaderboard();
+  document.getElementById("winner").innerText = "";
+  alert("Game reset");
+}
+
+updateLeaderboard();
+</script>
+
+</body>
+</html>
