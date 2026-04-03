@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
+<body>
+
+<h1>Admin Panel</h1>
+
+<button onclick="start()">Start 30 Min Game</button>
+<button onclick="reset()">Reset</button>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAlpih5wZZnOOBCrB_bi_z8bW2pJOH8jhw",
+  authDomain: "easter-egg-qr-hunt.firebaseapp.com",
+  databaseURL: "https://easter-egg-qr-hunt-default-rtdb.firebaseio.com",
+  projectId: "easter-egg-qr-hunt",
+  storageBucket: "easter-egg-qr-hunt.firebasestorage.app",
+  messagingSenderId: "635189005609",
+  appId: "1:635189005609:web:6904c2fca40e5540c37b38",
+  measurementId: "G-HM1HHWG4JT"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function start(){
+  db.ref("game").set({
+    startTime: Date.now(),
+    duration: 1800000
+  });
+}
+
+function reset(){
+  db.ref("scores").remove();
+  db.ref("game").remove();
+}
+</script>
+
+</body>
+</html>
