@@ -4,9 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leaderboard</title>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
 <style>
 body{font-family:Arial;text-align:center;background:#f6fff4;}
 table{margin:auto;border-collapse:collapse;}
@@ -17,35 +14,29 @@ td,th{padding:10px;border:1px solid #ccc;}
 <body>
 
 <h1>🏆 Leaderboard</h1>
-<table id="board"><tr><th>Player</th><th>Points</th></tr></table>
+<table id="board"><tr><th>Name</th><th>Points</th></tr></table>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAlpih5wZZnOOBCrB_bi_z8bW2pJOH8jhw",
-  authDomain: "easter-egg-qr-hunt.firebaseapp.com",
-  databaseURL: "https://easter-egg-qr-hunt-default-rtdb.firebaseio.com",
-  projectId: "easter-egg-qr-hunt",
-  storageBucket: "easter-egg-qr-hunt.firebasestorage.app",
-  messagingSenderId: "635189005609",
-  appId: "1:635189005609:web:6904c2fca40e5540c37b38",
-  measurementId: "G-HM1HHWG4JT"
-};
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzr_37eqxnuXztugm2f3de3mt8nnWgaPYE_dp6p8k6P8tBOf_mejsx3t4tRntdwq-o/exec";
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+async function load(){
+  const res = await fetch(SCRIPT_URL);
+  const data = await res.json();
 
-db.ref("scores").on("value", snap=>{
   const table=document.getElementById("board");
-  table.innerHTML="<tr><th>Player</th><th>Points</th></tr>";
+  table.innerHTML="<tr><th>Name</th><th>Points</th></tr>";
 
-  Object.entries(snap.val()||{})
+  data.scores.slice(1)
     .sort((a,b)=>b[1]-a[1])
-    .forEach(([n,s])=>{
-      const r=table.insertRow();
-      r.insertCell(0).innerText=n;
-      r.insertCell(1).innerText=s;
+    .forEach(r=>{
+      const row=table.insertRow();
+      row.insertCell(0).innerText=r[0];
+      row.insertCell(1).innerText=r[1];
     });
-});
+}
+
+setInterval(load,3000);
+load();
 </script>
 
 </body>
