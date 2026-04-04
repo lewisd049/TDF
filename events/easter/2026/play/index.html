@@ -5,30 +5,12 @@
 <title>Easter Hunt</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 body{margin:0;font-family:Arial;text-align:center;background:#111;color:white;}
 #reader{width:100%;}
 #timer{font-size:22px;margin:10px;}
-#popup{
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(0);
-  background:white;color:black;
-  padding:25px;border-radius:15px;
-  transition:0.3s;
-}
-#popup.show{transform:translate(-50%,-50%) scale(1);}
-#winnerScreen{
-  display:none;position:fixed;
-  top:0;left:0;width:100%;height:100%;
-  background:black;color:white;
-  justify-content:center;align-items:center;
-  flex-direction:column;
-}
 </style>
 </head>
 
@@ -37,50 +19,29 @@ body{margin:0;font-family:Arial;text-align:center;background:#111;color:white;}
 <h2 id="player"></h2>
 <div id="timer"></div>
 <div id="reader"></div>
-<div id="popup"></div>
-
-<div id="winnerScreen">
-  <h1 id="winnerText"></h1>
-</div>
 
 <script>
-// 🔥 YOUR CONFIG (READY)
-const firebaseConfig = {
-  apiKey: "AIzaSyAlpih5wZZnOOBCrB_bi_z8bW2pJOH8jhw",
-  authDomain: "easter-egg-qr-hunt.firebaseapp.com",
-  databaseURL: "https://easter-egg-qr-hunt-default-rtdb.firebaseio.com",
-  projectId: "easter-egg-qr-hunt",
-  storageBucket: "easter-egg-qr-hunt.firebasestorage.app",
-  messagingSenderId: "635189005609",
-  appId: "1:635189005609:web:6904c2fca40e5540c37b38",
-  measurementId: "G-HM1HHWG4JT"
-};
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzr_37eqxnuXztugm2f3de3mt8nnWgaPYE_dp6p8k6P8tBOf_mejsx3t4tRntdwq-o/exec";
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// Player
 const player = localStorage.getItem("playerName");
-if(!player) location.href = "/";
+if(!player) location.href="/";
+
 document.getElementById("player").innerText = player;
 
-// Points
-const points = {
-  EGG1:10, EGG2:15, EGG3:20, EGG4:25, GOLDEN:100
-};
+const points = {EGG1:10,EGG2:15,EGG3:20,EGG4:25,GOLDEN:100};
 
 let foundEggs = JSON.parse(localStorage.getItem("foundEggs")) || [];
 
-function popup(t){
-  const p=document.getElementById("popup");
-  p.innerText=t;
-  p.classList.add("show");
-  setTimeout(()=>p.classList.remove("show"),1500);
+function send(data){
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
 }
 
 function addPoints(code){
   if(foundEggs.includes(code)){
-    popup("❌ Already scanned");
+    alert("Already scanned!");
     return;
   }
 
@@ -90,54 +51,51 @@ function addPoints(code){
   foundEggs.push(code);
   localStorage.setItem("foundEggs", JSON.stringify(foundEggs));
 
-  db.ref("scores/"+player).once("value", s=>{
-    db.ref("scores/"+player).set((s.val()||0)+pts);
-  });
-
-  popup("🥚 "+code+" +"+pts);
+  send({action:"score", name:player, points:pts});
 }
 
-// QR
+// QR Scanner
 new Html5QrcodeScanner("reader",{fps:10,qrbox:250})
 .render(txt=>addPoints(txt.toUpperCase()));
 
-// TIMER
-db.ref("game").on("value", snap=>{
-  const g=snap.val();
-  if(!g) return;
+// ⏱️ TIMER
+async function loadGame(){
+  const res = await fetch(SCRIPT_URL);
+  const data = await res.json();
 
-  const end=g.startTime+g.duration;
+  const game = data.game[1];
+  if(!game) return;
+
+  const end = game[0] + game[1];
 
   setInterval(()=>{
-    const left=Math.max(0,Math.floor((end-Date.now())/1000));
-    const m=Math.floor(left/60);
-    const s=left%60;
+    const left = Math.max(0, Math.floor((end-Date.now())/1000));
 
-    document.getElementById("timer").innerText=
-      "Time Left: "+m+":"+(s<10?"0"+s:s);
+    document.getElementById("timer").innerText =
+      "Time Left: "+Math.floor(left/60)+":"+("0"+left%60).slice(-2);
 
     if(left<=0) showWinner();
   },1000);
-});
-
-function showWinner(){
-  db.ref("scores").once("value", snap=>{
-    let w="Nobody", max=0;
-
-    Object.entries(snap.val()||{}).forEach(([n,s])=>{
-      if(s>max){max=s;w=n;}
-    });
-
-    document.getElementById("winnerText").innerText=
-      "🏆 "+w+" wins ("+max+")";
-
-    document.getElementById("winnerScreen").style.display="flex";
-
-    for(let i=0;i<5;i++){
-      setTimeout(()=>confetti(),i*300);
-    }
-  });
 }
+
+async function showWinner(){
+  const res = await fetch(SCRIPT_URL);
+  const data = await res.json();
+
+  let winner="Nobody", max=0;
+
+  data.scores.slice(1).forEach(r=>{
+    if(r[1]>max){max=r[1];winner=r[0];}
+  });
+
+  alert("🏆 "+winner+" wins! ("+max+" pts)");
+
+  for(let i=0;i<5;i++){
+    setTimeout(()=>confetti(),i*300);
+  }
+}
+
+loadGame();
 </script>
 
 </body>
