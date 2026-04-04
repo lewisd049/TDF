@@ -1,34 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin</title>
+</head>
 
-<body>
+<body style="text-align:center; font-family:Arial;">
 
-<h1>Admin Panel</h1>
+<h1>Admin</h1>
 
-<button onclick="start()">Start 25 Min Game</button>
-<button onclick="reset()">Reset Game</button>
+<button onclick="reset()">Reset Scores</button>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzr_37eqxnuXztugm2f3de3mt8nnWgaPYE_dp6p8k6P8tBOf_mejsx3t4tRntdwq-o/exec";
 
-function send(action){
+function reset(){
   fetch(SCRIPT_URL,{
     method:"POST",
-    body:JSON.stringify({action})
+    body:JSON.stringify({action:"reset"})
   });
-}
 
-function start(){
-  send("start");
-  alert("Game started!");
-}
-
-function reset(){
-  send("reset");
-  alert("Game reset!");
+  alert("Reset!");
 }
 </script>
 
