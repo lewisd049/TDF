@@ -31,8 +31,13 @@ body{margin:0;font-family:Arial;text-align:center;background:#111;color:white;}
 <div id="popup"></div>
 
 <script>
-const player = localStorage.getItem("playerName");
-if(!player) location.href="index.html";
+const params = new URLSearchParams(window.location.search);
+const player = params.get("player");
+
+if(!player){
+  alert("No player name!");
+  location.href = "../";
+}
 
 document.getElementById("player").innerText = "Player: " + player;
 
