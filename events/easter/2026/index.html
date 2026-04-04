@@ -11,14 +11,18 @@
 
 <input id="name" placeholder="Enter your name">
 <br><br>
-<button onclick="go()">Start</button>
+<button onclick="start()">Start</button>
 
 <script>
-function go(){
+function start(){
   const name = document.getElementById("name").value.trim();
   if(!name) return alert("Enter name");
 
-  window.location.href = "https://tdf.qzz.io/events/easter/2026/play/?player=" + encodeURIComponent(name);
+  localStorage.setItem("playerName", name);
+  localStorage.setItem("score", "0");
+  localStorage.setItem("scanned", JSON.stringify([]));
+
+  window.location.href = "https://tdf.qzz.io/events/easter/2026/play";
 }
 </script>
 
