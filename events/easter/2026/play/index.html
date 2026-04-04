@@ -35,11 +35,14 @@ const params = new URLSearchParams(window.location.search);
 const player = params.get("player");
 
 if(!player){
-  alert("No player name!");
-  location.href = "../";
+  document.body.innerHTML = `
+    <h1 style="color:white;text-align:center;margin-top:100px;">
+      No player name!<br>
+      <a href="../" style="color:cyan;">Go back</a>
+    </h1>
+  `;
+  throw new Error("No player");
 }
-
-document.getElementById("player").innerText = "Player: " + player;
 
 const points = {
   // 🥚 Regular Eggs
