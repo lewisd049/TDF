@@ -2,42 +2,23 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join Easter Hunt</title>
-
-<style>
-body{
-  font-family:Arial;
-  text-align:center;
-  background:#f6fff4;
-  padding-top:100px;
-}
-input,button{
-  padding:15px;
-  font-size:18px;
-  width:80%;
-  max-width:300px;
-  margin:10px;
-}
-</style>
+<title>Join</title>
 </head>
 
-<body>
+<body style="text-align:center; font-family:Arial; padding-top:100px;">
 
-<h1>🐣 Join the Hunt</h1>
+<h1>🐣 Easter Hunt</h1>
 
 <input id="name" placeholder="Enter your name">
-<br>
-<button onclick="start()">Start Hunt</button>
+<br><br>
+<button onclick="go()">Start</button>
 
 <script>
-function start(){
+function go(){
   const name = document.getElementById("name").value.trim();
-  if(!name) return alert("Enter your name");
+  if(!name) return alert("Enter name");
 
-  localStorage.setItem("playerName", name);
-  localStorage.setItem("foundEggs", JSON.stringify([]));
-
-  window.location.href = "https://tdf.qzz.io/events/easter/2026/play/";
+  window.location.href = "https://tdf.qzz.io/events/easter/2026/play/?player=" + encodeURIComponent(name);
 }
 </script>
 
