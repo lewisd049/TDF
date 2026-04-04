@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Easter Hunt</title>
+<title>Play</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -10,37 +10,55 @@
 <style>
 body{margin:0;font-family:Arial;text-align:center;background:#111;color:white;}
 #reader{width:100%;}
-#timer{font-size:22px;margin:10px;}
 </style>
 </head>
 
 <body>
 
 <h2 id="player"></h2>
-<div id="timer"></div>
 <div id="reader"></div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzr_37eqxnuXztugm2f3de3mt8nnWgaPYE_dp6p8k6P8tBOf_mejsx3t4tRntdwq-o/exec";
 
-const player = localStorage.getItem("playerName");
-if(!player) location.href="/";
+// 🔍 Get player from URL
+const params = new URLSearchParams(window.location.search);
+const player = params.get("player");
 
-document.getElementById("player").innerText = player;
+if(!player){
+  alert("No player name!");
+  location.href="/";
+}
 
-const points = {EGG1:10,EGG2:15,EGG3:20,EGG4:25,GOLDEN:100};
+document.getElementById("player").innerText = "Player: " + player;
 
-let foundEggs = JSON.parse(localStorage.getItem("foundEggs")) || [];
+// Points
+const points = {
+  EGG1:10,
+  EGG2:15,
+  EGG3:20,
+  EGG4:25,
+  GOLDEN:100
+};
 
-function send(data){
+// Prevent duplicates (this session only)
+let scanned = [];
+
+// Send to Google Sheets
+function send(points){
   fetch(SCRIPT_URL,{
     method:"POST",
-    body:JSON.stringify(data)
+    body:JSON.stringify({
+      action:"score",
+      name:player,
+      points:points
+    })
   });
 }
 
+// When scanning
 function addPoints(code){
-  if(foundEggs.includes(code)){
+  if(scanned.includes(code)){
     alert("Already scanned!");
     return;
   }
@@ -48,54 +66,20 @@ function addPoints(code){
   const pts = points[code];
   if(!pts) return;
 
-  foundEggs.push(code);
-  localStorage.setItem("foundEggs", JSON.stringify(foundEggs));
+  scanned.push(code);
 
-  send({action:"score", name:player, points:pts});
+  send(pts);
+
+  // 🎉 Confetti feedback
+  confetti();
+
+  alert(code + " +" + pts + " points!");
 }
 
-// QR Scanner
+// QR scanner
 new Html5QrcodeScanner("reader",{fps:10,qrbox:250})
-.render(txt=>addPoints(txt.toUpperCase()));
+.render(text => addPoints(text.toUpperCase()));
 
-// ⏱️ TIMER
-async function loadGame(){
-  const res = await fetch(SCRIPT_URL);
-  const data = await res.json();
-
-  const game = data.game[1];
-  if(!game) return;
-
-  const end = game[0] + game[1];
-
-  setInterval(()=>{
-    const left = Math.max(0, Math.floor((end-Date.now())/1000));
-
-    document.getElementById("timer").innerText =
-      "Time Left: "+Math.floor(left/60)+":"+("0"+left%60).slice(-2);
-
-    if(left<=0) showWinner();
-  },1000);
-}
-
-async function showWinner(){
-  const res = await fetch(SCRIPT_URL);
-  const data = await res.json();
-
-  let winner="Nobody", max=0;
-
-  data.scores.slice(1).forEach(r=>{
-    if(r[1]>max){max=r[1];winner=r[0];}
-  });
-
-  alert("🏆 "+winner+" wins! ("+max+" pts)");
-
-  for(let i=0;i<5;i++){
-    setTimeout(()=>confetti(),i*300);
-  }
-}
-
-loadGame();
 </script>
 
 </body>
