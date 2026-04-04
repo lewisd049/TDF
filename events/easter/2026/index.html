@@ -22,7 +22,7 @@ function start(){
   localStorage.setItem("score", "0");
   localStorage.setItem("scanned", JSON.stringify([]));
 
-  window.location.href = "https://tdf.qzz.io/events/easter/2026/play";
+  window.location.href = "https://tdf.qzz.io/events/easter/2026/play/?player=" + encodeURIComponent(name);
 }
 </script>
 
