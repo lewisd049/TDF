@@ -1,0 +1,100 @@
+<!-- =========================
+FILE: display.html
+(TV Display Screen)
+========================= -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Display Screen</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+
+    body{
+      background:black;
+      color:white;
+      font-family:Arial;
+      margin:0;
+      overflow:hidden;
+    }
+
+    .topbar{
+      background:#111;
+      padding:20px;
+      text-align:center;
+      font-size:40px;
+      font-weight:bold;
+    }
+
+    .container{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:20px;
+      padding:20px;
+    }
+
+    .player{
+      background:#1e1e1e;
+      border-radius:20px;
+      padding:30px;
+      text-align:center;
+      box-shadow:0 0 20px #000;
+    }
+
+    .name{
+      font-size:40px;
+      margin-bottom:20px;
+    }
+
+    .score{
+      font-size:90px;
+      color:#00ccff;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="topbar" id="sportName">
+  Sport
+</div>
+
+<div class="container" id="container"></div>
+
+<script>
+
+function loadData(){
+
+  let data = JSON.parse(localStorage.getItem("scoreboardData")) || {
+    sport:"No Sport",
+    players:[]
+  };
+
+  document.getElementById("sportName").innerText = "🏆 " + data.sport;
+
+  let container = document.getElementById("container");
+
+  container.innerHTML = "";
+
+  data.players.sort((a,b)=>b.score-a.score);
+
+  data.players.forEach(player=>{
+
+    container.innerHTML += `
+      <div class="player">
+        <div class="name">${player.name}</div>
+        <div class="score">${player.score}</div>
+      </div>
+    `;
+  });
+}
+
+loadData();
+
+setInterval(loadData,1000);
+
+</script>
+
+</body>
+</html>
