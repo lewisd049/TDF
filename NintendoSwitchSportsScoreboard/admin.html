@@ -1,0 +1,193 @@
+<!-- =========================
+FILE: admin.html
+(Admin Panel)
+========================= -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      font-family:Arial;
+      background:#1a1a1a;
+      color:white;
+      padding:20px;
+    }
+
+    h1{
+      text-align:center;
+    }
+
+    .card{
+      background:#2b2b2b;
+      padding:20px;
+      border-radius:15px;
+      margin-bottom:20px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      margin-bottom:10px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+    }
+
+    button{
+      padding:12px 20px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      cursor:pointer;
+      margin:5px;
+    }
+
+    .add{
+      background:#00aa44;
+      color:white;
+    }
+
+    .minus{
+      background:#cc3333;
+      color:white;
+    }
+
+    .save{
+      background:#0088ff;
+      color:white;
+    }
+
+    .player{
+      background:#333;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎮 Admin Panel</h1>
+
+<div class="card">
+
+  <label>Sport</label>
+  <select id="sport">
+    <option>Bowling</option>
+    <option>Golf</option>
+    <option>Basketball</option>
+    <option>Tennis</option>
+    <option>Badminton</option>
+    <option>Chambara</option>
+    <option>Volleyball</option>
+    <option>Football</option>
+  </select>
+
+  <label>Add Player</label>
+  <input type="text" id="playerName" placeholder="Player Name">
+
+  <button class="save" onclick="addPlayer()">Add Player</button>
+
+</div>
+
+<div id="players"></div>
+
+<div class="card">
+  <button class="save" onclick="saveData()">Save</button>
+  <button class="minus" onclick="resetAll()">Reset Everything</button>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("scoreboardData")) || {
+  sport:"Basketball",
+  players:[]
+};
+
+document.getElementById("sport").value = data.sport;
+
+document.getElementById("sport").addEventListener("change", e=>{
+  data.sport = e.target.value;
+  saveData();
+});
+
+function addPlayer(){
+
+  let name = document.getElementById("playerName").value.trim();
+
+  if(name === "") return;
+
+  data.players.push({
+    name:name,
+    score:0,
+    wins:0
+  });
+
+  document.getElementById("playerName").value = "";
+
+  saveData();
+  renderPlayers();
+}
+
+function renderPlayers(){
+
+  let container = document.getElementById("players");
+
+  container.innerHTML = "";
+
+  data.players.forEach((player,index)=>{
+
+    container.innerHTML += `
+      <div class="player">
+        <h2>${player.name}</h2>
+
+        <p>Score: ${player.score}</p>
+
+        <button class="add" onclick="changeScore(${index},1)">+1</button>
+        <button class="minus" onclick="changeScore(${index},-1)">-1</button>
+
+        <button onclick="removePlayer(${index})">Remove</button>
+      </div>
+    `;
+  });
+}
+
+function changeScore(index,amount){
+
+  data.players[index].score += amount;
+
+  saveData();
+  renderPlayers();
+}
+
+function removePlayer(index){
+
+  data.players.splice(index,1);
+
+  saveData();
+  renderPlayers();
+}
+
+function saveData(){
+
+  localStorage.setItem("scoreboardData",JSON.stringify(data));
+}
+
+function resetAll(){
+
+  if(confirm("Reset EVERYTHING?")){
+
+    localStorage.removeItem("scoreboardData");
+
+    location.reload();
+  }
+}
+
+renderPlayers();
+</script>
+
+</body>
+</html>
