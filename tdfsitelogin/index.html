@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,10 +37,18 @@ button{
     border:none;
     border-radius:8px;
     cursor:pointer;
+    border-radius:8px;
+}
+button:hover{
+    opacity:0.9;
 }
 #error{
     color:red;
     margin-top:10px;
+}
+.success{
+    color:green;
+    margin-bottom:15px;
 }
 </style>
 </head>
@@ -62,7 +71,7 @@ const users = {
     "lewis": "OliverScotland2025#"
 };
 
-// URL to go to after successful login
+// Members area URL
 const successURL = "https://www.tdf1.uk/memberarea";
 
 function login() {
@@ -70,7 +79,15 @@ function login() {
     const password = document.getElementById("password").value;
 
     if (users[username] && users[username] === password) {
-        window.location.href = successURL;
+
+        document.querySelector(".login-box").innerHTML = `
+            <h2 class="success">Login Successful</h2>
+            <p>Welcome, ${username}!</p>
+            <button onclick="window.open('${successURL}', '_blank')">
+                Open Members Area
+            </button>
+        `;
+
     } else {
         document.getElementById("error").innerHTML =
             "Incorrect username or password.";
@@ -80,3 +97,4 @@ function login() {
 
 </body>
 </html>
+```
