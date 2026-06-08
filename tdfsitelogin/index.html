@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f4f4;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+.login-box{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+    width:250px;
+    text-align:center;
+}
+input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+button{
+    width:100%;
+    padding:10px;
+    background:#4285F4;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+#error{
+    color:red;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2>Login</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <div id="error"></div>
+</div>
+
+<script>
+// Users and passwords
+const users = {
+    "lewis": "OliverScotland2025#"
+};
+
+// URL to go to after successful login
+const successURL = "https://www.tdf1.uk/memberarea";
+
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (users[username] && users[username] === password) {
+        window.location.href = successURL;
+    } else {
+        document.getElementById("error").innerHTML =
+            "Incorrect username or password.";
+    }
+}
+</script>
+
+</body>
+</html>
