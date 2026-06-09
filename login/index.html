@@ -65,31 +65,39 @@ button:hover{
 </div>
 
 <script>
-// Users and passwords
+// Users
 const users = {
-    "lewis": "OliverScotland2025#"
+    "lewis": {
+        password: "OliverScotland2025#",
+        name: "Lewis"
+    },
 };
 
 // Members area URL
 const successURL = "https://www.tdf1.uk/memberarea";
 
 function login() {
-    const username = document.getElementById("username").value;
+
+    // Convert username to lowercase so it isn't case-sensitive
+    const username = document.getElementById("username").value.toLowerCase();
     const password = document.getElementById("password").value;
 
-    if (users[username] && users[username] === password) {
+    if (users[username] && users[username].password === password) {
 
+        // Show the user's display name
         document.querySelector(".login-box").innerHTML = `
             <h2 class="success">Login Successful</h2>
-            <p>Welcome, ${username}!</p>
-            <button onclick="window.open('${successURL}', '_blank')">
+            <p>Welcome, ${users[username].name}!</p>
+            <button onclick="window.location.href='${successURL}'">
                 Open Members Area
             </button>
         `;
 
     } else {
+
         document.getElementById("error").innerHTML =
             "Incorrect username or password.";
+
     }
 }
 </script>
