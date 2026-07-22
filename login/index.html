@@ -251,16 +251,19 @@ window.open(
 
 window.showWelcome = async function(){
 
-
 const user = auth.currentUser;
 
 let userName = user.email;
+
+let adminButton = "";
 
 
 const userDoc = await getDoc(
     doc(db,"users",user.uid)
 );
 
+
+// Get display name
 
 if(userDoc.exists() && userDoc.data().name){
 
@@ -269,48 +272,30 @@ if(userDoc.exists() && userDoc.data().name){
 }
 
 
-let adminButton = "";
-
-
-if(user){
-
-
-const userDoc = await getDoc(
-doc(db,"users",user.uid)
-);
-
-
+// Check admin
 
 if(
-userDoc.exists() &&
-userDoc.data().role === "admin"
+    userDoc.exists() &&
+    userDoc.data().role === "admin"
 ){
 
+    adminButton = `
 
-adminButton = `
+    <button onclick="openAdmin()">
+    Admin Panel
+    </button>
 
-<button onclick="openGithub()">
-GitHub
-</button>
+    <button onclick="openGithub()">
+    GitHub
+    </button>
 
-<button onclick="openAdmin()">
-Admin Panel
-</button>
-
-
-
-`;
-
-
-`;
-
+    `;
 
 }
 
 
-}
 
-    document.getElementById("box").innerHTML = `
+document.getElementById("box").innerHTML = `
 
 
 <h2 class="success">
@@ -333,7 +318,6 @@ Edit Profile
 </button>
 
 
-
 ${adminButton}
 
 
@@ -345,8 +329,6 @@ Logout
 `;
 
 };
-
-
 
 
 // Open members area
