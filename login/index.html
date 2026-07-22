@@ -126,8 +126,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-
+import {
+getFirestore,
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const successURL = "https://www.tdf1.uk/memberarea";
 
@@ -203,6 +209,8 @@ window.showWelcome = function(){
         Edit Profile
         </button>
 
+        ${adminButton}
+
 
 
         <button class="logout" onclick="logout()">
@@ -232,7 +240,14 @@ window.openMembers = function(){
 
 
 
+window.openAdmin = function(){
 
+    window.open(
+        "https://console.firebase.google.com/u/0/project/tdf-login-cbb53/authentication/users",
+        "_blank"
+    );
+
+};
 
 // Edit profile screen
 
