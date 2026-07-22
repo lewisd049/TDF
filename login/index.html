@@ -254,6 +254,20 @@ window.showWelcome = async function(){
 
 const user = auth.currentUser;
 
+let userName = user.email;
+
+
+const userDoc = await getDoc(
+    doc(db,"users",user.uid)
+);
+
+
+if(userDoc.exists() && userDoc.data().name){
+
+    userName = userDoc.data().name;
+
+}
+
 
 let adminButton = "";
 
@@ -298,7 +312,7 @@ Login Successful
 
 
 <p>
-Welcome, ${user.email}
+Welcome, ${userName}
 </p>
 
 
