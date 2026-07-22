@@ -96,7 +96,6 @@ button:hover{
 
 <script type="module">
 
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import { 
@@ -107,6 +106,13 @@ import {
     updatePassword,
     signOut
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 
@@ -126,16 +132,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
-import {
-getFirestore,
-doc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
 
 const successURL = "https://www.tdf1.uk/memberarea";
+
+const logoutURL = "https://www.tdf1.uk/logoutsuccessful";
 
 
 
@@ -154,6 +158,7 @@ window.login = async function(){
 
     try{
 
+
         await signInWithEmailAndPassword(
             auth,
             email,
@@ -166,10 +171,13 @@ window.login = async function(){
 
     }catch(error){
 
+
         document.getElementById("error").innerHTML =
         "Incorrect email or password.";
 
+
     }
+
 
 };
 
@@ -177,12 +185,40 @@ window.login = async function(){
 
 
 
-// Welcome page
 
-window.showWelcome = function(){
+// Welcome screen
+
+window.showWelcome = async function(){
 
 
     const user = auth.currentUser;
+
+
+    let adminButton = "";
+
+
+
+    const userDoc = await getDoc(
+        doc(db,"users",user.uid)
+    );
+
+
+
+    if(
+        userDoc.exists() &&
+        userDoc.data().role === "admin"
+    ){
+
+        adminButton = `
+
+        <button onclick="openAdmin()">
+        Admin Panel
+        </button>
+
+        `;
+
+    }
+
 
 
     document.getElementById("box").innerHTML = `
@@ -191,6 +227,7 @@ window.showWelcome = function(){
         <h2 class="success">
         Login Successful
         </h2>
+
 
 
         <p>
@@ -208,6 +245,8 @@ window.showWelcome = function(){
         <button onclick="editProfile()">
         Edit Profile
         </button>
+
+
 
         ${adminButton}
 
@@ -227,29 +266,45 @@ window.showWelcome = function(){
 
 
 
-// Open members in new tab
+
+// Open members area in new tab
 
 window.openMembers = function(){
+
 
     window.open(
         successURL,
         "_blank"
     );
 
+
 };
 
 
 
+
+
+
+// Open Firebase user management
+
 window.openAdmin = function(){
+
 
     window.open(
         "https://console.firebase.google.com/u/0/project/tdf-login-cbb53/authentication/users",
         "_blank"
     );
 
+
 };
 
-// Edit profile screen
+
+
+
+
+
+
+// Edit profile
 
 window.editProfile = function(){
 
@@ -297,15 +352,24 @@ window.editProfile = function(){
 
 };
 
-    // Save profile changes
+
+
+
+
+
+
+// Save profile changes
 
 window.saveProfile = async function(){
+
 
     const user = auth.currentUser;
 
 
+
     const newEmail =
     document.getElementById("newEmail").value;
+
 
 
     const newPassword =
@@ -318,10 +382,12 @@ window.saveProfile = async function(){
 
         if(newEmail){
 
+
             await updateEmail(
                 user,
                 newEmail
             );
+
 
         }
 
@@ -329,10 +395,12 @@ window.saveProfile = async function(){
 
         if(newPassword){
 
+
             await updatePassword(
                 user,
                 newPassword
             );
+
 
         }
 
@@ -358,7 +426,9 @@ window.saveProfile = async function(){
 
 
 
-// Success screen
+
+
+// Success page
 
 window.showSuccess = function(){
 
@@ -398,14 +468,18 @@ window.showSuccess = function(){
 
 
 
-// Return to welcome page
+
+
+// Back button
 
 window.returnToWelcome = function(){
 
 
     auth.currentUser.reload().then(()=>{
 
+
         showWelcome();
+
 
     });
 
@@ -416,13 +490,18 @@ window.returnToWelcome = function(){
 
 
 
+
+
 // Logout
 
 window.logout = async function(){
 
+
     await signOut(auth);
 
-    window.location.href = "https://www.tdf1.uk/logoutsuccessful";
+
+    window.location.href = logoutURL;
+
 
 };
 
@@ -430,14 +509,18 @@ window.logout = async function(){
 
 
 
+
+
 // Keep login after refresh
 
-onAuthStateChanged(auth, (user)=>{
+onAuthStateChanged(auth,(user)=>{
 
 
     if(user){
 
+
         showWelcome();
+
 
     }
 
