@@ -110,7 +110,7 @@ p{
 
 <h2>Login</h2>
 
-<input type="email" id="username" placeholder="Email">
+<input type="text" id="username" placeholder="Username">
 
 <input type="password" id="password" placeholder="Password">
 
@@ -189,8 +189,14 @@ const logoutURL =
 window.login = async function(){
 
 
-const email =
-document.getElementById("username").value;
+let email =
+document.getElementById("username").value.trim();
+
+
+// Add @tdf1.uk automatically if needed
+if(!email.includes("@")){
+    email = email + "@tdf1.uk";
+}
 
 
 const password =
