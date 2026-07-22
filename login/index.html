@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>The Diamond Family - Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 
 body{
@@ -21,10 +22,8 @@ body{
     padding:25px;
     border-radius:15px;
     box-shadow:0 0 10px rgba(0,0,0,0.2);
-
     width:250px;
     max-width:90vw;
-
     text-align:center;
 }
 
@@ -76,28 +75,30 @@ button:hover{
     font-size:40px;
 }
 
-    @media (max-width:480px){
 
-    body{
-        padding:20px;
-        box-sizing:border-box;
-    }
+@media(max-width:480px){
 
-    .login-box{
-        width:100%;
-        max-width:340px;
-        padding:20px;
-    }
+body{
+    padding:20px;
+    box-sizing:border-box;
+}
 
-    h2{
-        font-size:24px;
-    }
+.login-box{
+    width:100%;
+    max-width:340px;
+    padding:20px;
+}
 
-    p{
-        font-size:15px;
-    }
+h2{
+    font-size:24px;
+}
+
+p{
+    font-size:15px;
+}
 
 }
+
 </style>
 
 </head>
@@ -107,15 +108,15 @@ button:hover{
 
 <div class="login-box" id="box">
 
-    <h2>Login</h2>
+<h2>Login</h2>
 
-    <input type="email" id="username" placeholder="Email">
+<input type="email" id="username" placeholder="Email">
 
-    <input type="password" id="password" placeholder="Password">
+<input type="password" id="password" placeholder="Password">
 
-    <button onclick="login()">Login</button>
+<button onclick="login()">Login</button>
 
-    <div id="error"></div>
+<div id="error"></div>
 
 </div>
 
@@ -123,35 +124,44 @@ button:hover{
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
 
 import { 
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    updateEmail,
-    updatePassword,
-    signOut
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+updateEmail,
+updatePassword,
+signOut
+} 
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
 import {
-    getFirestore,
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+getFirestore,
+doc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-
-// Firebase configuration
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC_5lEfcu-Jk3vP0Dp3fh_KQcIgftKQr7c",
-  authDomain: "tdf-login-cbb53.firebaseapp.com",
-  projectId: "tdf-login-cbb53",
-  storageBucket: "tdf-login-cbb53.firebasestorage.app",
-  messagingSenderId: "660606755803",
-  appId: "1:660606755803:web:9b96e5dc0f1e98c0f7fdfe"
+
+apiKey: "AIzaSyC_5lEfcu-Jk3vP0Dp3fh_KQcIgftKQr7c",
+
+authDomain: "tdf-login-cbb53.firebaseapp.com",
+
+projectId: "tdf-login-cbb53",
+
+storageBucket: "tdf-login-cbb53.firebasestorage.app",
+
+messagingSenderId: "660606755803",
+
+appId: "1:660606755803:web:9b96e5dc0f1e98c0f7fdfe"
+
 };
 
 
@@ -164,57 +174,68 @@ const db = getFirestore(app);
 
 
 
-const successURL = "https://www.tdf1.uk/memberarea";
-
-const logoutURL = "https://www.tdf1.uk/logoutsuccessful";
-
+const successURL =
+"https://www.tdf1.uk/memberarea";
 
 
+const logoutURL =
+"https://www.tdf1.uk/logoutsuccessful";
 
-// Login
+
+
+
+// LOGIN
 
 window.login = async function(){
 
-    const email =
-    document.getElementById("username").value;
+
+const email =
+document.getElementById("username").value;
 
 
-    const password =
-    document.getElementById("password").value;
+const password =
+document.getElementById("password").value;
 
 
-    try{
+
+try{
 
 
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
 
 
-        showWelcome();
+showWelcome();
 
 
-    }catch(error){
+
+}catch(error){
 
 
-        document.getElementById("error").innerHTML =
-        "Incorrect email or password.";
+document.getElementById("error").innerHTML =
+"Incorrect email or password.";
 
 
-    }
+}
 
 
 };
 
 
+
+// GitHub
+
 window.openGithub = function(){
 
-    window.open(
-        "https://github.com/lewisd049/TDF",
-        "_blank"
-    );
+
+window.open(
+"https://github.com/lewisd049/TDF",
+"_blank"
+);
+
 
 };
 
@@ -225,101 +246,97 @@ window.openGithub = function(){
 window.showWelcome = async function(){
 
 
-    const user = auth.currentUser;
+const user = auth.currentUser;
 
 
-    let adminButton = "";
+let adminButton = "";
+
+
+if(user){
+
+
+const userDoc = await getDoc(
+doc(db,"users",user.uid)
+);
 
 
 
-    const userDoc = await getDoc(
-        doc(db,"users",user.uid)
-    );
-
-
-
-    let adminButton = "";
-
-if (
-    userDoc.exists() &&
-    userDoc.data().role === "admin"
+if(
+userDoc.exists() &&
+userDoc.data().role === "admin"
 ){
 
-    adminButton = `
 
-    <button onclick="openAdmin()">
-    Admin Panel
-    </button>
+adminButton = `
 
-    <button onclick="openGithub()">
-    GitHub
-    </button>
+<button onclick="openAdmin()">
+Admin Panel
+</button>
 
-    `;
+<button onclick="openGithub()">
+GitHub
+</button>
+
+`;
+
 
 }
 
 
+}
 
     document.getElementById("box").innerHTML = `
 
 
-        <h2 class="success">
-        Login Successful
-        </h2>
+<h2 class="success">
+Login Successful
+</h2>
 
 
-
-        <p>
-        Welcome, ${user.email}
-        </p>
-
+<p>
+Welcome, ${user.email}
+</p>
 
 
-        <button onclick="openMembers()">
-        Open Members Area
-        </button>
+<button onclick="openMembers()">
+Open Members Area
+</button>
 
 
-
-        <button onclick="editProfile()">
-        Edit Profile
-        </button>
-
-        <button onclick="openGithub()">
-        GitHub
-        </button>
+<button onclick="editProfile()">
+Edit Profile
+</button>
 
 
-
-        ${adminButton}
-
-
-
-        <button class="logout" onclick="logout()">
-        Logout
-        </button>
+<button onclick="openGithub()">
+GitHub
+</button>
 
 
-    `;
+${adminButton}
 
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+
+`;
 
 };
 
 
 
 
-
-
-// Open members area in new tab
+// Open members area
 
 window.openMembers = function(){
 
 
-    window.open(
-        successURL,
-        "_blank"
-    );
+window.open(
+successURL,
+"_blank"
+);
 
 
 };
@@ -328,21 +345,18 @@ window.openMembers = function(){
 
 
 
-
-// Open Firebase user management
+// Open Firebase admin
 
 window.openAdmin = function(){
 
 
-    window.open(
-        "https://console.firebase.google.com/u/0/project/tdf-login-cbb53/authentication/users",
-        "_blank"
-    );
+window.open(
+"https://console.firebase.google.com/u/0/project/tdf-login-cbb53/authentication/users",
+"_blank"
+);
 
 
 };
-
-
 
 
 
@@ -353,46 +367,40 @@ window.openAdmin = function(){
 window.editProfile = function(){
 
 
-    document.getElementById("box").innerHTML = `
+document.getElementById("box").innerHTML = `
 
 
-        <h2>
-        Edit Profile
-        </h2>
+<h2>
+Edit Profile
+</h2>
 
 
-
-        <input
-        type="email"
-        id="newEmail"
-        placeholder="New Email">
-
+<input
+type="email"
+id="newEmail"
+placeholder="New Email">
 
 
-        <input
-        type="password"
-        id="newPassword"
-        placeholder="New Password">
+<input
+type="password"
+id="newPassword"
+placeholder="New Password">
 
 
-
-        <button onclick="saveProfile()">
-        Save Changes
-        </button>
-
+<button onclick="saveProfile()">
+Save Changes
+</button>
 
 
-        <button class="back" onclick="returnToWelcome()">
-        Back
-        </button>
+<button class="back" onclick="returnToWelcome()">
+Back
+</button>
 
 
+<div id="error"></div>
 
-        <div id="error"></div>
 
-
-    `;
-
+`;
 
 };
 
@@ -400,72 +408,67 @@ window.editProfile = function(){
 
 
 
-
-
-// Save profile changes
+// Save profile
 
 window.saveProfile = async function(){
 
 
-    const user = auth.currentUser;
+const user = auth.currentUser;
+
+
+const newEmail =
+document.getElementById("newEmail").value;
+
+
+const newPassword =
+document.getElementById("newPassword").value;
 
 
 
-    const newEmail =
-    document.getElementById("newEmail").value;
+try{
+
+
+if(newEmail){
+
+
+await updateEmail(
+user,
+newEmail
+);
+
+
+}
 
 
 
-    const newPassword =
-    document.getElementById("newPassword").value;
+if(newPassword){
+
+
+await updatePassword(
+user,
+newPassword
+);
+
+
+}
 
 
 
-    try{
-
-
-        if(newEmail){
-
-
-            await updateEmail(
-                user,
-                newEmail
-            );
-
-
-        }
+showSuccess();
 
 
 
-        if(newPassword){
+}catch(error){
 
 
-            await updatePassword(
-                user,
-                newPassword
-            );
+document.getElementById("error").innerHTML =
+error.message;
 
 
-        }
-
-
-
-        showSuccess();
-
-
-
-    }catch(error){
-
-
-        document.getElementById("error").innerHTML =
-        error.message;
-
-
-    }
+}
 
 
 };
-
 
 
 
@@ -477,34 +480,30 @@ window.saveProfile = async function(){
 window.showSuccess = function(){
 
 
-    document.getElementById("box").innerHTML = `
+document.getElementById("box").innerHTML = `
 
 
-        <div class="tick">
-        ✓
-        </div>
+<div class="tick">
+✓
+</div>
 
 
-
-        <h2 class="success">
-        Success
-        </h2>
-
+<h2 class="success">
+Success
+</h2>
 
 
-        <p>
-        Your profile has been updated successfully.
-        </p>
+<p>
+Your profile has been updated successfully.
+</p>
 
 
+<button onclick="returnToWelcome()">
+Back
+</button>
 
-        <button onclick="returnToWelcome()">
-        Back
-        </button>
 
-
-    `;
-
+`;
 
 };
 
@@ -513,23 +512,21 @@ window.showSuccess = function(){
 
 
 
-
-// Back button
+// Back to welcome
 
 window.returnToWelcome = function(){
 
 
-    auth.currentUser.reload().then(()=>{
+auth.currentUser.reload().then(()=>{
 
 
-        showWelcome();
+showWelcome();
 
 
-    });
+});
 
 
 };
-
 
 
 
@@ -541,14 +538,14 @@ window.returnToWelcome = function(){
 window.logout = async function(){
 
 
-    await signOut(auth);
+await signOut(auth);
 
 
-    window.location.href = logoutURL;
+window.location.href =
+logoutURL;
 
 
 };
-
 
 
 
@@ -560,17 +557,16 @@ window.logout = async function(){
 onAuthStateChanged(auth,(user)=>{
 
 
-    if(user){
+if(user){
 
 
-        showWelcome();
+showWelcome();
 
 
-    }
+}
 
 
 });
-
 
 
 </script>
