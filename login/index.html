@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
+<title>The Diamond Fmaily - Login</title>
 
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:#f4f4f4;
@@ -40,10 +41,19 @@ button{
     border:none;
     border-radius:8px;
     cursor:pointer;
+    margin-top:10px;
 }
 
 button:hover{
     opacity:0.9;
+}
+
+.back{
+    background:#777;
+}
+
+.logout{
+    background:#d9534f;
 }
 
 #error{
@@ -61,18 +71,12 @@ button:hover{
     font-size:40px;
 }
 
-.back{
-    background:#777;
-    margin-top:10px;
-}
-    button{
-    margin-top:10px;
-}
 </style>
 
 </head>
 
 <body>
+
 
 <div class="login-box" id="box">
 
@@ -89,7 +93,9 @@ button:hover{
 </div>
 
 
+
 <script type="module">
+
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
@@ -98,8 +104,10 @@ import {
     signInWithEmailAndPassword,
     onAuthStateChanged,
     updateEmail,
-    updatePassword
+    updatePassword,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
 
 
 // Firebase configuration
@@ -114,24 +122,25 @@ const firebaseConfig = {
 };
 
 
-// Start Firebase
 
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
 
-// Members area URL
 
 const successURL = "https://www.tdf1.uk/memberarea";
 
 
-// Login function
+
+
+// Login
 
 window.login = async function(){
 
     const email =
     document.getElementById("username").value;
+
 
     const password =
     document.getElementById("password").value;
@@ -159,14 +168,19 @@ window.login = async function(){
 };
 
 
-// Welcome screen
+
+
+
+// Welcome page
 
 window.showWelcome = function(){
+
 
     const user = auth.currentUser;
 
 
     document.getElementById("box").innerHTML = `
+
 
         <h2 class="success">
         Login Successful
@@ -178,50 +192,74 @@ window.showWelcome = function(){
         </p>
 
 
+
         <button onclick="openMembers()">
         Open Members Area
         </button>
+
 
 
         <button onclick="editProfile()">
         Edit Profile
         </button>
 
+
+
+        <button class="logout" onclick="logout()">
+        Logout
+        </button>
+
+
     `;
+
 
 };
 
 
-// Open members area in same tab
+
+
+
+// Open members in new tab
 
 window.openMembers = function(){
 
-    window.location.href = successURL;
+    window.open(
+        successURL,
+        "_blank"
+    );
 
 };
+
+
+
 
 
 // Edit profile screen
 
 window.editProfile = function(){
 
+
     document.getElementById("box").innerHTML = `
+
 
         <h2>
         Edit Profile
         </h2>
 
 
-        <input 
-        type="email" 
-        id="newEmail" 
+
+        <input
+        type="email"
+        id="newEmail"
         placeholder="New Email">
 
 
-        <input 
-        type="password" 
-        id="newPassword" 
+
+        <input
+        type="password"
+        id="newPassword"
         placeholder="New Password">
+
 
 
         <button onclick="saveProfile()">
@@ -229,19 +267,22 @@ window.editProfile = function(){
         </button>
 
 
+
         <button class="back" onclick="returnToWelcome()">
         Back
         </button>
 
 
+
         <div id="error"></div>
+
 
     `;
 
+
 };
 
-
-// Save profile changes
+    // Save profile changes
 
 window.saveProfile = async function(){
 
@@ -254,6 +295,7 @@ window.saveProfile = async function(){
 
     const newPassword =
     document.getElementById("newPassword").value;
+
 
 
     try{
@@ -269,6 +311,7 @@ window.saveProfile = async function(){
         }
 
 
+
         if(newPassword){
 
             await updatePassword(
@@ -279,7 +322,9 @@ window.saveProfile = async function(){
         }
 
 
+
         showSuccess();
+
 
 
     }catch(error){
@@ -291,12 +336,17 @@ window.saveProfile = async function(){
 
     }
 
+
 };
+
+
+
 
 
 // Success screen
 
 window.showSuccess = function(){
+
 
     document.getElementById("box").innerHTML = `
 
@@ -306,14 +356,17 @@ window.showSuccess = function(){
         </div>
 
 
+
         <h2 class="success">
         Success
         </h2>
 
 
+
         <p>
         Your profile has been updated successfully.
         </p>
+
 
 
         <button onclick="returnToWelcome()">
@@ -323,12 +376,17 @@ window.showSuccess = function(){
 
     `;
 
+
 };
 
 
-// Return to welcome screen
+
+
+
+// Return to welcome page
 
 window.returnToWelcome = function(){
+
 
     auth.currentUser.reload().then(()=>{
 
@@ -336,12 +394,66 @@ window.returnToWelcome = function(){
 
     });
 
+
 };
 
 
-// Keep user logged in after refresh
+
+
+
+// Logout
+
+window.logout = async function(){
+
+
+    await signOut(auth);
+
+
+    document.getElementById("box").innerHTML = `
+
+
+        <h2>
+        Login
+        </h2>
+
+
+
+        <input 
+        type="email" 
+        id="username" 
+        placeholder="Email">
+
+
+
+        <input 
+        type="password" 
+        id="password" 
+        placeholder="Password">
+
+
+
+        <button onclick="login()">
+        Login
+        </button>
+
+
+
+        <div id="error"></div>
+
+
+    `;
+
+
+};
+
+
+
+
+
+// Keep login after refresh
 
 onAuthStateChanged(auth, (user)=>{
+
 
     if(user){
 
@@ -349,10 +461,13 @@ onAuthStateChanged(auth, (user)=>{
 
     }
 
+
 });
 
 
+
 </script>
+
 
 </body>
 </html>
