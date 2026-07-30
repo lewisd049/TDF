@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TDF Homelab Rack Build</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #f5f5f7;
+    color: #111;
+    transition: .3s;
+}
+
+.dark {
+    background: #111;
+    color: white;
+}
+
+header {
+    padding: 50px 20px;
+    text-align: center;
+    background: linear-gradient(135deg,#007aff,#5ac8fa);
+    color: white;
+}
+
+header h1 {
+    font-size: 42px;
+    margin: 0;
+}
+
+header p {
+    font-size: 18px;
+}
+
+button {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    background: white;
+    color: black;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.section-title {
+    font-size: 28px;
+    margin-top: 30px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.1);
+    transition: .3s;
+}
+
+.dark .card {
+    background: #1c1c1e;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    margin-top:0;
+}
+
+.card a {
+    display:inline-block;
+    margin-top:15px;
+    padding:12px 18px;
+    background:#007aff;
+    color:white;
+    text-decoration:none;
+    border-radius:20px;
+}
+
+.price {
+    font-size:14px;
+    opacity:.7;
+}
+
+footer {
+    text-align:center;
+    padding:30px;
+    opacity:.7;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>TDF Homelab Rack Build</h1>
+<p>Complete 10-inch rack setup shopping list</p>
+<button onclick="toggleDark()">Toggle Dark Mode</button>
+</header>
+
+
+<div class="container">
+
+<h2 class="section-title">Rack & Hardware</h2>
+
+<div class="grid">
+
+<div class="card">
+<h2>Item 1</h2>
+<p>Rack equipment</p>
+<a href="https://www.amazon.co.uk/dp/B07QSTJ63S" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 2</h2>
+<p>Rack accessory</p>
+<a href="https://www.amazon.co.uk/dp/B097TPB4LR" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 3</h2>
+<p>Rack accessory</p>
+<a href="https://www.amazon.co.uk/dp/B097TPB4LR" target="_blank">View on Amazon</a>
+</div>
+
+
+</div>
+
+
+<h2 class="section-title">Networking</h2>
+
+<div class="grid">
+
+<div class="card">
+<h2>Item 4</h2>
+<p>Network equipment</p>
+<a href="https://www.amazon.co.uk/dp/B07W585S5B" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 5</h2>
+<p>Network equipment</p>
+<a href="https://www.amazon.co.uk/dp/B0GC2XCBQ7" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 6</h2>
+<p>Network equipment</p>
+<a href="https://www.amazon.co.uk/dp/B07KK5CSJY" target="_blank">View on Amazon</a>
+</div>
+
+</div>
+
+
+<h2 class="section-title">Cabling & Tools</h2>
+
+<div class="grid">
+
+
+<div class="card">
+<h2>Item 7</h2>
+<p>Cabling equipment</p>
+<a href="https://www.amazon.co.uk/dp/B0FBF9CF9P" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 8</h2>
+<p>Network tools</p>
+<a href="https://www.amazon.co.uk/dp/B08PV44RDK" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 9</h2>
+<p>Network accessory</p>
+<a href="https://www.amazon.co.uk/dp/B07HP6ZLSM" target="_blank">View on Amazon</a>
+</div>
+
+
+<div class="card">
+<h2>Item 10</h2>
+<p>Network accessory</p>
+<a href="https://www.amazon.co.uk/dp/B0D5QL66MB" target="_blank">View on Amazon</a>
+</div>
+
+
+</div>
+
+</div>
+
+
+<footer>
+TDF Homelab Rack Build • Amazon Shopping List
+</footer>
+
+
+<script>
+function toggleDark(){
+    document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
