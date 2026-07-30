@@ -1,25 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>Network Upgrade</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-    font-family:Arial, sans-serif;
-    margin:0;
-    background:#f5f5f5;
-    color:#222;
+
+:root{
+    --bg:#f5f5f5;
+    --card:white;
+    --text:#222;
+    --header:#111827;
+    --code:#111827;
 }
+
+.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:white;
+    --header:#020617;
+    --code:#020617;
+}
+
+
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+
+    font-family:Arial,sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    transition:.3s;
+
+}
+
+
 
 header{
-    background:#111827;
+
+    background:var(--header);
     color:white;
-    padding:30px;
+    padding:35px;
     text-align:center;
+
 }
 
+
+header h1{
+
+    margin:0;
+    font-size:40px;
+
+}
+
+
+
+button{
+
+    padding:12px 18px;
+    border:0;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+
+}
+
+
+.darkbtn{
+
+    background:white;
+    color:black;
+
+}
+
+
+
 .search{
+
     width:80%;
     max-width:600px;
     padding:15px;
@@ -28,245 +91,446 @@ header{
     border-radius:10px;
     border:1px solid #ccc;
     font-size:16px;
+
 }
 
+
+
 .container{
+
     max-width:1100px;
     margin:auto;
     padding:20px;
+
 }
+
+
+
 
 .map{
-    background:white;
+
+    background:var(--card);
     padding:25px;
     border-radius:15px;
-    box-shadow:0 5px 15px #0002;
     margin-bottom:30px;
-    text-align:center;
+    box-shadow:0 5px 20px #0003;
+
 }
+
+
 
 .network{
-    background:#111827;
+
+    background:var(--code);
     color:white;
-    padding:20px;
-    border-radius:10px;
+    padding:25px;
+    border-radius:15px;
     font-family:monospace;
-    text-align:left;
+
 }
 
+
+
+.node{
+
+    background:#2563eb;
+    padding:10px;
+    border-radius:8px;
+    margin:10px;
+    display:inline-block;
+    cursor:pointer;
+    transition:.2s;
+
+}
+
+
+.node:hover{
+
+    transform:scale(1.05);
+    background:#3b82f6;
+
+}
+
+
+
 .item{
-    background:white;
+
+    background:var(--card);
     border-radius:15px;
     padding:20px;
     margin:20px 0;
     display:flex;
     gap:25px;
     align-items:center;
-    box-shadow:0 5px 15px #0002;
+    box-shadow:0 5px 20px #0003;
+
 }
+
+
 
 .item img{
-    width:180px;
-    height:140px;
+
+    width:200px;
+    height:160px;
     object-fit:contain;
+
 }
 
+
+
+.item h2 span{
+
+    font-size:15px;
+    background:#64748b;
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+
+}
+
+
+
 .buttons a{
+
     display:inline-block;
     padding:10px 15px;
     margin:5px;
     border-radius:8px;
     text-decoration:none;
     color:white;
+
 }
+
+
 
 .amazon{
+
     background:#ff9900;
+
 }
+
 
 .unifi{
+
     background:#2563eb;
+
 }
 
+
+
 @media(max-width:700px){
-    .item{
-        flex-direction:column;
-    }
+
+.item{
+
+flex-direction:column;
+text-align:center;
+
 }
+
+}
+
+
 </style>
+
 
 </head>
 
+
 <body>
 
+
 <header>
+
 <h1>Network Upgrade</h1>
+
 <p>UniFi Home Lab & Smart Home Network</p>
+
+<button class="darkbtn" onclick="darkMode()">
+Toggle Dark Mode
+</button>
+
 </header>
 
 
-<input class="search" id="search" placeholder="Search equipment..." onkeyup="searchItems()">
+
+<input 
+class="search"
+id="search"
+placeholder="Search equipment..."
+onkeyup="searchItems()">
+
 
 
 
 <div class="container">
 
+
 <div class="map">
 
-<h2>How The Network Works</h2>
+
+<h2>Clickable Network Map</h2>
+
 
 <div class="network">
 
-Openreach Fibre<br>
-↓<br>
-Openreach ONT<br>
-↓<br>
-UniFi Cloud Gateway Max<br>
-↓<br>
-Front Room Flex 2.5G PoE<br>
-├── Dad Laptop<br>
-├── Hive Hub<br>
-└── Ethernet Cable Upstairs<br>
-&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-Lewis Room Flex 2.5G PoE<br>
-├── ZimaOS<br>
-├── Lewis Laptop<br>
-├── NAS<br>
-└── UniFi U7 Lite<br>
+
+<div class="node" onclick="jump('gateway')">
+Openreach ONT → Cloud Gateway Max
+</div>
+
+
+<br>
+
+
+<div class="node" onclick="jump('switch')">
+Front Room Flex 2.5G PoE
+</div>
+
+
+<br>
+
+
+<div class="node">
+├ Dad Laptop
+</div>
+
+
+<div class="node">
+├ Hive Hub
+</div>
+
+
+<br>
+
+
+<div class="node" onclick="jump('switch')">
+Lewis Room Flex 2.5G PoE
+</div>
+
+
+<br>
+
+
+<div class="node">
+├ ZimaOS
+</div>
+
+
+<div class="node">
+├ NAS
+</div>
+
+
+<div class="node">
+├ Lewis Laptop
+</div>
+
+
+<br>
+
+
+<div class="node" onclick="jump('u7')">
+└ UniFi U7 Lite
+</div>
+
 
 </div>
 
-</div>
 
+</div>
 
 <div id="items">
 
+<!-- Cloud Gateway Max -->
 
-<div class="item">
-<img src="https://placehold.co/180x140?text=Cloud+Gateway+Max">
+<div class="item" id="gateway">
+
+<img src="https://dl.ui.com/qig/ucg-max/images/ucg-max.png" alt="Cloud Gateway Max">
 
 <div>
-<h2>UniFi Cloud Gateway Max</h2>
+
+<h2>UniFi Cloud Gateway Max <span>(x1)</span></h2>
 
 <p>
-The main router, firewall and UniFi controller.
-Controls VLANs, SSIDs, security and monitoring.
+The heart of the network. Handles routing, firewall rules, VLANs,
+VPNs, DHCP, statistics and the UniFi Controller.
 </p>
 
 <div class="buttons">
-<a class="amazon" href="#" target="_blank">
+
+<a class="amazon"
+href="#"
+target="_blank">
 View On Amazon
 </a>
 
-<a class="unifi" href="#" target="_blank">
+<a class="unifi"
+href="https://ui.com/"
+target="_blank">
 View On UniFi
 </a>
+
+</div>
+
 </div>
 
 </div>
-</div>
 
 
 
-<div class="item">
 
-<img src="https://placehold.co/180x140?text=Flex+2.5G+PoE">
+
+<!-- Flex Switch -->
+
+<div class="item" id="switch">
+
+<img src="https://dl.ui.com/qig/usw-flex-2-5g-5/images/usw-flex-2-5g-5.png" alt="Flex 2.5G PoE">
 
 <div>
 
-<h2>UniFi Flex 2.5G PoE Switch</h2>
+<h2>UniFi Flex 2.5G PoE <span>(x2)</span></h2>
 
 <p>
-Provides 2.5Gb networking and PoE power for UniFi devices.
+
+One switch sits in the front room and another in Lewis' room,
+providing high-speed 2.5Gb networking and PoE.
+
 </p>
 
 <div class="buttons">
-<a class="amazon" href="#" target="_blank">
+
+<a class="amazon"
+href="#"
+target="_blank">
 View On Amazon
 </a>
 
-<a class="unifi" href="#" target="_blank">
+<a class="unifi"
+href="https://ui.com/"
+target="_blank">
 View On UniFi
 </a>
+
+</div>
+
 </div>
 
 </div>
-</div>
 
 
 
 
-<div class="item">
 
-<img src="https://placehold.co/180x140?text=U7+Lite">
+<!-- U7 Lite -->
+
+<div class="item" id="u7">
+
+<img src="https://dl.ui.com/qig/u7-lite/images/u7-lite.png" alt="U7 Lite">
 
 <div>
 
-<h2>UniFi U7 Lite</h2>
+<h2>UniFi U7 Lite <span>(x1)</span></h2>
 
 <p>
-Wi-Fi 7 access point for TDF-Member and TDFE Network.
+
+Wi-Fi 7 Access Point providing:
+
+<br><br>
+
+• TDF-Member
+
+<br>
+
+• TDFE Network
+
 </p>
 
 <div class="buttons">
-<a class="amazon" href="#" target="_blank">
+
+<a class="amazon"
+href="#"
+target="_blank">
 View On Amazon
 </a>
 
-<a class="unifi" href="#" target="_blank">
+<a class="unifi"
+href="https://ui.com/"
+target="_blank">
 View On UniFi
 </a>
+
+</div>
+
 </div>
 
 </div>
-</div>
 
 
 
 
-<div class="item">
 
-<img src="https://placehold.co/180x140?text=CAT6+Cable">
+<!-- Ethernet Cable -->
+
+<div class="item" id="cable">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Ethernet_Cable.jpg">
 
 <div>
 
-<h2>CAT6 Pure Copper Ethernet Cable</h2>
+<h2>CAT6 Pure Copper Ethernet Cable <span>(x1)</span></h2>
 
 <p>
-50m solid copper backbone cable connecting the rooms.
+
+Backbone cable connecting the front room and Lewis Room switches.
+
 </p>
 
 <div class="buttons">
-<a class="amazon" href="#" target="_blank">
+
+<a class="amazon"
+href="#"
+target="_blank">
 View On Amazon
 </a>
+
+</div>
+
 </div>
 
 </div>
-</div>
 
 
 
 
-<div class="item">
 
-<img src="https://placehold.co/180x140?text=Crimp+Tool">
+<!-- Crimp Tool -->
+
+<div class="item" id="crimper">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/RJ45_Crimping_Tool.jpg">
 
 <div>
 
-<h2>RJ45 Crimp Tool Kit</h2>
+<h2>RJ45 Crimp Tool Kit <span>(x1)</span></h2>
 
 <p>
-Used for creating and repairing Ethernet cables.
+
+For terminating Ethernet cables and fitting RJ45 connectors.
+
 </p>
 
 <div class="buttons">
-<a class="amazon" href="#" target="_blank">
+
+<a class="amazon"
+href="#"
+target="_blank">
 View On Amazon
 </a>
+
 </div>
 
 </div>
+
 </div>
 
 
@@ -281,27 +545,60 @@ View On Amazon
 
 function searchItems(){
 
-let input=document.getElementById("search").value.toLowerCase();
+const value=document.getElementById("search").value.toLowerCase();
 
-let items=document.querySelectorAll(".item");
+document.querySelectorAll(".item").forEach(card=>{
 
-items.forEach(item=>{
-
-let text=item.innerText.toLowerCase();
-
-if(text.includes(input)){
-item.style.display="flex";
-}
-else{
-item.style.display="none";
-}
+card.style.display=
+card.innerText.toLowerCase().includes(value)
+? "flex"
+: "none";
 
 });
 
 }
 
+
+
+function jump(id){
+
+document.getElementById(id).scrollIntoView({
+
+behavior:"smooth",
+block:"center"
+
+});
+
+}
+
+
+
+function darkMode(){
+
+document.body.classList.toggle("dark");
+
+localStorage.setItem(
+
+"theme",
+
+document.body.classList.contains("dark")
+? "dark"
+: "light"
+
+);
+
+}
+
+
+
+if(localStorage.getItem("theme")=="dark"){
+
+document.body.classList.add("dark");
+
+}
+
 </script>
 
-
 </body>
+
 </html>
