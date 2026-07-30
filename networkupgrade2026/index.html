@@ -273,69 +273,20 @@ onkeyup="searchItems()">
 
 <div class="network">
 
-
-<div class="node" onclick="jump('gateway')">
-Openreach ONT → Cloud Gateway Max
-</div>
-
-
-<br>
-
-
-<div class="node" onclick="jump('switch')">
-Front Room Flex 2.5G PoE
-</div>
-
-
-<br>
-
-
-<div class="node">
-├ Dad Laptop
-</div>
-
-
-<div class="node">
-├ Hive Hub
-</div>
-
-
-<br>
-
-
-<div class="node" onclick="jump('switch')">
-Lewis Room Flex 2.5G PoE
-</div>
-
-
-<br>
-
-
-<div class="node">
-├ ZimaOS
-</div>
-
-
-<div class="node">
-├ NAS
-</div>
-
-
-<div class="node">
-├ Lewis Laptop
-</div>
-
-
-<br>
-
-
-<div class="node" onclick="jump('u7')">
-└ UniFi U7 Lite
-</div>
-
-
-</div>
-
+<pre>
+- Fibre ONT
+    - UniFi Cloud Gateway Max
+        - Front Room Flex 2.5G PoE
+            - Dad Laptop
+            - Hive Box
+            - BT Whole Home Base Disc
+            - Ethernet Cable To Lewis Room
+                - Lewis Room Flex 2.5G PoE
+                    - ZimaOS
+                    - Lewis Laptop
+                    - NAS (Blue Laptop)
+                    - UniFi U7 Lite
+</pre>
 
 </div>
 
