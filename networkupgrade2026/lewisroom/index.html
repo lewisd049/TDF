@@ -1,230 +1,298 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>TDF Homelab Rack Build</title>
-
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    background: #f5f5f7;
-    color: #111;
-    transition: .3s;
-}
-
-.dark {
-    background: #111;
-    color: white;
-}
-
-header {
-    padding: 50px 20px;
-    text-align: center;
-    background: linear-gradient(135deg,#007aff,#5ac8fa);
-    color: white;
-}
-
-header h1 {
-    font-size: 42px;
-    margin: 0;
-}
-
-header p {
-    font-size: 18px;
-}
-
-button {
-    border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    background: white;
-    color: black;
-    font-weight: bold;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 30px 20px;
-}
-
-.section-title {
-    font-size: 28px;
-    margin-top: 30px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-    gap: 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 25px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.1);
-    transition: .3s;
-}
-
-.dark .card {
-    background: #1c1c1e;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card h2 {
-    margin-top:0;
-}
-
-.card a {
-    display:inline-block;
-    margin-top:15px;
-    padding:12px 18px;
-    background:#007aff;
-    color:white;
-    text-decoration:none;
-    border-radius:20px;
-}
-
-.price {
-    font-size:14px;
-    opacity:.7;
-}
-
-footer {
-    text-align:center;
-    padding:30px;
-    opacity:.7;
-}
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>Lewis Room Network Upgrade</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --card: rgba(255,255,255,.64);
+      --border: rgba(255,255,255,.8);
+      --shadow: 0 18px 45px rgba(18, 35, 66, .12);
+      --blue: #007aff;
+      --blue-hover: #0066d6;
+      --badge: rgba(0,122,255,.12);
+    }
+    body.dark {
+      color-scheme: dark;
+      --bg: #080b12;
+      --text: #f5f5f7;
+      --muted: #a1a1a6;
+      --card: rgba(28,31,42,.7);
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 18px 45px rgba(0,0,0,.38);
+      --badge: rgba(10,132,255,.2);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      transition: background .25s ease, color .25s ease;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      width: 38rem;
+      height: 38rem;
+      border-radius: 50%;
+      filter: blur(45px);
+      opacity: .35;
+      pointer-events: none;
+    }
+    body::before { background: #80c7ff; top: -18rem; right: -11rem; }
+    body::after { background: #b8a0ff; bottom: -22rem; left: -14rem; }
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      gap: 18px;
+    }
+    .brand { font-size: .95rem; font-weight: 700; letter-spacing: -.01em; }
+    .mode-toggle {
+      border: 1px solid var(--border);
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font: inherit;
+      font-size: .88rem;
+    }
+    .hero {
+      margin: 12px 0 48px;
+      min-height: 360px;
+      padding: clamp(34px, 7vw, 80px);
+      display: grid;
+      align-content: center;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: linear-gradient(125deg, rgba(0,122,255,.84), rgba(91, 73, 214, .68));
+      box-shadow: var(--shadow);
+      color: white;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -60px;
+      bottom: -100px;
+      border: 30px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+    }
+    .eyebrow { margin: 0 0 14px; font-size: .9rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; opacity: .86; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(2.6rem, 7vw, 5.5rem); line-height: .98; letter-spacing: -.065em; }
+    .hero p:last-child { max-width: 620px; margin: 25px 0 0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5; opacity: .93; }
+    .intro { max-width: 700px; margin: 0 0 44px; color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+    section { margin: 0 0 56px; }
+    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    h2 { margin: 0; font-size: clamp(1.65rem, 3vw, 2.25rem); letter-spacing: -.045em; }
+    .section-heading span { color: var(--muted); font-size: .92rem; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .card {
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 24px 55px rgba(18,35,66,.18); }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 14px; background: linear-gradient(145deg, #0a84ff, #5e5ce6); color: #fff; font-size: 1.35rem; }
+    .qty { white-space: nowrap; padding: 7px 10px; border-radius: 999px; background: var(--badge); color: var(--blue); font-size: .78rem; font-weight: 750; }
+    .card h3 { margin: 22px 0 9px; font-size: 1.25rem; letter-spacing: -.03em; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .94rem; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: auto;
+      padding: 11px 15px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 700;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .button:hover { background: var(--blue-hover); transform: scale(1.015); }
+    .layout {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .u-labels { display: grid; grid-template-rows: repeat(8, 1fr); padding: 16px 0; background: rgba(0,122,255,.09); }
+    .u-labels span { display: grid; place-items: center; font-weight: 800; color: var(--blue); font-size: .9rem; }
+    .rack { padding: 16px; }
+    .rack-row { min-height: 44px; display: flex; align-items: center; padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: .93rem; }
+    .rack-row:last-child { border-bottom: 0; }
+    .rack-row strong { margin-right: 10px; }
+    footer { padding: 5px 0 42px; color: var(--muted); text-align: center; font-size: .9rem; }
+    @media (max-width: 850px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 28px, 1160px); }
+      .hero { border-radius: 24px; }
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: 242px; }
+      .layout { grid-template-columns: 60px 1fr; }
+      .rack-row { padding: 8px 10px; font-size: .84rem; }
+    }
+  </style>
 </head>
-
 <body>
+  <main class="wrap">
+    <nav aria-label="Site navigation">
+      <div class="brand">Lewis' Home Network</div>
+      <button class="mode-toggle" type="button" id="modeToggle" aria-label="Toggle dark mode">◐&nbsp; Dark mode</button>
+    </nav>
 
-<header>
-<h1>TDF Homelab Rack Build</h1>
-<p>Complete 10-inch rack setup shopping list</p>
-<button onclick="toggleDark()">Toggle Dark Mode</button>
-</header>
+    <header class="hero">
+      <p class="eyebrow">10-inch network rack build</p>
+      <h1>Lewis Room<br>Network Upgrade</h1>
+      <p>A compact, tidy setup for wired networking, a mini PC, NAS and BT Whole Home Wi-Fi equipment.</p>
+    </header>
 
+    <p class="intro">This shopping list is organised around the GeeekPi DeskPi RackMate T1. Every item links straight to its Amazon listing. The blanking panels and short patch leads are the only items needed in pairs.</p>
 
-<div class="container">
+    <section>
+      <div class="section-heading"><h2>Rack & mounting</h2><span>The foundation</span></div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">▦</div><span class="qty">1×</span></div>
+          <h3>8U Mini Network Rack</h3>
+          <p>The 10-inch, 200 mm-deep RackMate T1 is the compact frame that holds the network equipment and shelf.</p>
+          <a class="button" href="https://www.amazon.co.uk/gp/product/B0FBFDZD4C/" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">▤</div><span class="qty">2×</span></div>
+          <h3>1U Blanking Panel</h3>
+          <p>Two black 10-inch steel panels to cover unused rack spaces and keep the front of the rack looking clean.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B097TPB4LR" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">●</div><span class="qty">1×</span></div>
+          <h3>Rackstuds Mounting Kit</h3>
+          <p>Finger-friendly rack mounting studs for fitting the patch panel, switch, shelf and panels without cage nuts.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B07W585S5B" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">▱</div><span class="qty">1×</span></div>
+          <h3>Vented 1U Rack Shelf</h3>
+          <p>A shallow 200 mm shelf for the BT Whole Home disc, mini PC and compact NAS, with ventilation underneath.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B0D5QL66MB" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+      </div>
+    </section>
 
-<h2 class="section-title">Rack & Hardware</h2>
+    <section>
+      <div class="section-heading"><h2>Network core</h2><span>Connections and switching</span></div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">⇄</div><span class="qty">1×</span></div>
+          <h3>12-Port Keystone Patch Panel</h3>
+          <p>A 10-inch 1U modular panel that keeps room cables organised and provides space for future connections.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B07QSTJ63S" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">⌘</div><span class="qty">1×</span></div>
+          <h3>RJ45 Keystone Couplers</h3>
+          <p>Female-to-female Cat6 keystone couplers that click into the patch panel, avoiding punch-down termination.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B07KK5CSJY" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">↔</div><span class="qty">1×</span></div>
+          <h3>8-Port 2.5Gb Network Switch</h3>
+          <p>A fanless unmanaged 2.5Gb switch for fast connections between the router, NAS, mini PC and wired devices.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B0FHHLFG51" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">━</div><span class="qty">2×</span></div>
+          <h3>30 cm Black Patch Leads</h3>
+          <p>Two packs of short Cat6 patch cables for neat links from the patch panel to the switch, with spares included.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B0GC2XCBQ7" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+      </div>
+    </section>
 
-<div class="grid">
+    <section>
+      <div class="section-heading"><h2>Cabling & tools</h2><span>For making room runs</span></div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">〰</div><span class="qty">1×</span></div>
+          <h3>50 m Cat6 Network Cable</h3>
+          <p>Outdoor-rated, pure-copper 23 AWG Cat6 bulk cable for reliable permanent Ethernet runs around the room or home.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B0FBF9CF9P" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><div class="icon" aria-hidden="true">✂</div><span class="qty">1×</span></div>
+          <h3>RJ45 Crimp Tool Kit</h3>
+          <p>A pass-through crimping kit with Cat6 plugs and strain-relief boots for terminating the ends of your bulk cable.</p>
+          <a class="button" href="https://www.amazon.co.uk/dp/B08PV44RDK" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>
+        </article>
+      </div>
+    </section>
 
-<div class="card">
-<h2>Item 1</h2>
-<p>Rack equipment</p>
-<a href="https://www.amazon.co.uk/dp/B07QSTJ63S" target="_blank">View on Amazon</a>
-</div>
+    <section>
+      <div class="section-heading"><h2>Planned rack layout</h2><span>Front view</span></div>
+      <div class="layout" aria-label="Eight-unit rack layout">
+        <div class="u-labels" aria-hidden="true"><span>U8</span><span>U7</span><span>U6</span><span>U5</span><span>U4</span><span>U3</span><span>U2</span><span>U1</span></div>
+        <div class="rack">
+          <div class="rack-row"><strong>U8</strong> BT Whole Home Disc on shelf</div>
+          <div class="rack-row"><strong>U7</strong> Mini PC + NAS on shelf</div>
+          <div class="rack-row"><strong>U6</strong> Blank panel / spare space</div>
+          <div class="rack-row"><strong>U5</strong> Blank panel / spare space</div>
+          <div class="rack-row"><strong>U4</strong> 12-port patch panel</div>
+          <div class="rack-row"><strong>U3</strong> 8-port 2.5Gb switch</div>
+          <div class="rack-row"><strong>U2</strong> Spare space</div>
+          <div class="rack-row"><strong>U1</strong> Extension lead at the rear / bottom</div>
+        </div>
+      </div>
+    </section>
 
-
-<div class="card">
-<h2>Item 2</h2>
-<p>Rack accessory</p>
-<a href="https://www.amazon.co.uk/dp/B097TPB4LR" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 3</h2>
-<p>Rack accessory</p>
-<a href="https://www.amazon.co.uk/dp/B097TPB4LR" target="_blank">View on Amazon</a>
-</div>
-
-
-</div>
-
-
-<h2 class="section-title">Networking</h2>
-
-<div class="grid">
-
-<div class="card">
-<h2>Item 4</h2>
-<p>Network equipment</p>
-<a href="https://www.amazon.co.uk/dp/B07W585S5B" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 5</h2>
-<p>Network equipment</p>
-<a href="https://www.amazon.co.uk/dp/B0GC2XCBQ7" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 6</h2>
-<p>Network equipment</p>
-<a href="https://www.amazon.co.uk/dp/B07KK5CSJY" target="_blank">View on Amazon</a>
-</div>
-
-</div>
-
-
-<h2 class="section-title">Cabling & Tools</h2>
-
-<div class="grid">
-
-
-<div class="card">
-<h2>Item 7</h2>
-<p>Cabling equipment</p>
-<a href="https://www.amazon.co.uk/dp/B0FBF9CF9P" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 8</h2>
-<p>Network tools</p>
-<a href="https://www.amazon.co.uk/dp/B08PV44RDK" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 9</h2>
-<p>Network accessory</p>
-<a href="https://www.amazon.co.uk/dp/B07HP6ZLSM" target="_blank">View on Amazon</a>
-</div>
-
-
-<div class="card">
-<h2>Item 10</h2>
-<p>Network accessory</p>
-<a href="https://www.amazon.co.uk/dp/B0D5QL66MB" target="_blank">View on Amazon</a>
-</div>
-
-
-</div>
-
-</div>
-
-
-<footer>
-TDF Homelab Rack Build • Amazon Shopping List
-</footer>
-
-
-<script>
-function toggleDark(){
-    document.body.classList.toggle("dark");
-}
-</script>
-
+    <footer>Lewis Room Network Upgrade · Amazon links open in a new tab</footer>
+  </main>
+  <script>
+    const button = document.getElementById('modeToggle');
+    const saved = localStorage.getItem('lewis-network-theme');
+    if (saved === 'dark') document.body.classList.add('dark');
+    function updateLabel() {
+      button.innerHTML = document.body.classList.contains('dark') ? '☀&nbsp; Light mode' : '◐&nbsp; Dark mode';
+    }
+    updateLabel();
+    button.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('lewis-network-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      updateLabel();
+    });
+  </script>
 </body>
 </html>
